@@ -43,6 +43,17 @@
           <label class="chip"><input type="radio" name="op" value="-"> Trừ (−)</label>
           <label class="chip"><input type="radio" name="op" value="mix"> Cả hai (±)</label>
         </fieldset>
+        <fieldset>
+          <legend>Giao diện</legend>
+          <label for="theme-select" class="visually-hidden">Chọn theme</label>
+          <select id="theme-select" name="theme" class="chip" aria-label="Chọn theme">
+            <option value="pink">Hồng (mặc định)</option>
+            <option value="blue">Xanh dương</option>
+            <option value="purple">Tím</option>
+            <option value="green">Xanh lá</option>
+            <option value="dark">Tối</option>
+          </select>
+        </fieldset>
         <div class="controls">
           <button type="button" id="new-problem" class="btn primary">Câu mới</button>
           <button type="button" id="reset-score" class="btn light">Đặt lại điểm</button>

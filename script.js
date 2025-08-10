@@ -16,6 +16,7 @@
   const settingsSummary = document.getElementById('settings-summary');
   const summaryRange = document.getElementById('summary-range');
   const summaryOp = document.getElementById('summary-op');
+  const themeSelect = document.getElementById('theme-select');
 
   let correct = 0, wrong = 0, streak = 0;
   let current = { a:0, b:0, op:'+', answer:0 };
@@ -211,8 +212,29 @@
     });
   }
 
+  // Theme handling
+  function applyTheme(theme){
+    if(!theme) return;
+    document.documentElement.setAttribute('data-theme', theme);
+    try{ localStorage.setItem('theme', theme); }catch(e){}
+  }
+  (function initTheme(){
+    let saved = 'pink';
+    try{ saved = localStorage.getItem('theme') || 'pink'; }catch(e){ saved = 'pink'; }
+    applyTheme(saved);
+    if(themeSelect){ themeSelect.value = saved; }
+  })();
+  if(themeSelect){
+    themeSelect.addEventListener('change', (e)=>{
+      applyTheme(e.target.value);
+    });
+  }
+
   // When settings change, create new problem, update summary and collapse
-  settingsForm.addEventListener('change', ()=>{
+  settingsForm.addEventListener('change', (e)=>{
+    if(e && e.target && e.target.name === 'theme'){
+      // theme handled above; avoid unnecessary collapse toggling? still proceed for consistency
+    }
     generateProblem();
     updateSettingsSummary();
     setSettingsCollapsed(true);
