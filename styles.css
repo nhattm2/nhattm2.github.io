@@ -50,6 +50,8 @@ body{
 }
 @media (min-width: 860px){
   .container{grid-template-columns: 1.1fr 0.9fr}
+  /* Make the game section span full width at the bottom row on wide screens for prominence */
+  .game{ grid-column: 1 / -1; }
 }
 
 .card{
@@ -79,18 +81,20 @@ legend{font-weight:700; margin-bottom:6px}
 .controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
 
 /* Game */
+.card.game{ border-color: var(--primary); }
+.game h2{ font-size:24px; }
 .problem{
   display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-  font-size:36px; justify-content:center; padding:10px 0 6px;
+  font-size:44px; justify-content:center; padding:12px 0 8px;
 }
-.problem #a,.problem #b,.problem #op{min-width:42px; text-align:center}
+.problem #a,.problem #b,.problem #op{min-width:48px; text-align:center}
 .choices{
-  display:grid; grid-template-columns: repeat(2, minmax(90px, 1fr)); gap:10px; align-items:stretch; min-width:200px;
+  display:grid; grid-template-columns: repeat(2, minmax(100px, 1fr)); gap:12px; align-items:stretch; min-width:220px;
 }
-.choice-btn{font-size:22px; padding:12px 10px; background:var(--soft-bg); color:var(--primary-ink); border:2px solid var(--soft-border)}
+.choice-btn{font-size:24px; padding:14px 12px; background:var(--soft-bg); color:var(--primary-ink); border:2px solid var(--soft-border)}
 .choice-btn.correct{background:var(--success); color:white; border-color:var(--success)}
 .choice-btn.wrong{background:var(--choice-wrong-bg); color:var(--choice-wrong-ink); border-color:var(--choice-wrong-border)}
-.feedback{margin-top:10px; text-align:center; font-size:20px; color:var(--muted)}
+.feedback{margin-top:12px; text-align:center; font-size:22px; color:var(--muted)}
 
 /* Score */
 .scores{display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap}

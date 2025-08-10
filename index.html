@@ -61,6 +61,16 @@
       </form>
     </section>
 
+    <section class="card scoreboard" aria-labelledby="score-title">
+      <h2 id="score-title">Điểm số</h2>
+      <div class="scores">
+        <div class="score-item"><span>Đúng</span><strong id="correct">0</strong></div>
+        <div class="score-item"><span>Sai</span><strong id="wrong">0</strong></div>
+        <div class="score-item"><span>Liên tiếp</span><strong id="streak">0</strong></div>
+      </div>
+      <div class="stars" id="stars" aria-hidden="true">⭐️⭐️⭐️⭐️⭐️</div>
+    </section>
+
     <section class="card game" aria-labelledby="game-title">
       <h2 id="game-title">Bài toán</h2>
       <div class="problem" aria-live="polite">
@@ -71,16 +81,6 @@
         <div id="choices" class="choices" aria-label="Chọn đáp án" role="group"></div>
       </div>
       <div class="feedback" id="feedback" role="status" aria-live="polite">Hãy chọn đáp án đúng nhé!</div>
-    </section>
-
-    <section class="card scoreboard" aria-labelledby="score-title">
-      <h2 id="score-title">Điểm số</h2>
-      <div class="scores">
-        <div class="score-item"><span>Đúng</span><strong id="correct">0</strong></div>
-        <div class="score-item"><span>Sai</span><strong id="wrong">0</strong></div>
-        <div class="score-item"><span>Liên tiếp</span><strong id="streak">0</strong></div>
-      </div>
-      <div class="stars" id="stars" aria-hidden="true">⭐️⭐️⭐️⭐️⭐️</div>
     </section>
   </main>
 
