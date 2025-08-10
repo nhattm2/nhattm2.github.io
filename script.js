@@ -3,8 +3,6 @@
   const bEl = document.getElementById('b');
   const opEl = document.getElementById('op');
   const choicesEl = document.getElementById('choices');
-  const newBtn = document.getElementById('new-problem');
-  const resetBtn = document.getElementById('reset-score');
   const feedback = document.getElementById('feedback');
   const correctEl = document.getElementById('correct');
   const wrongEl = document.getElementById('wrong');
@@ -192,9 +190,8 @@
     disableChoices();
     feedback.textContent = `🎯 Hoàn thành ${qTotal} câu!`; 
     feedback.style.color = '#2e7d32';
-    // Show history and new-session button
+    // Show history
     showHistory();
-    if(newSessionBtn){ newSessionBtn.hidden = false; }
   }
   function nextQuestion(){
     if(finished) return;
@@ -306,18 +303,7 @@
     feedback.style.color = '#b00020';
   }
 
-  newBtn.addEventListener('click', ()=>{
-    if(finished){
-      // If finished, allow continuing with same scores but new session of questions
-      resetProgressFromSettings();
-      // Do not clear history automatically here to preserve previous run until user clicks "Làm bài mới"
-      nextQuestion();
-    }else{
-      nextQuestion();
-    }
-  });
   if(newSessionBtn){
-    newSessionBtn.hidden = true;
     newSessionBtn.addEventListener('click', ()=>{
       // Full new session: reset everything
       correct = 0; wrong = 0; streak = 0;
@@ -331,21 +317,9 @@
       resetProgressFromSettings();
       feedback.textContent = 'Bắt đầu bài mới! Chúc con học tốt!';
       feedback.style.color = '#7A6A7B';
-      if(newSessionBtn){ newSessionBtn.hidden = true; }
       nextQuestion();
     });
   }
-  resetBtn.addEventListener('click', ()=>{
-    correct = 0; wrong = 0; streak = 0;
-    correctEl.textContent = '0';
-    wrongEl.textContent = '0';
-    streakEl.textContent = '0';
-    updateStars();
-    feedback.textContent = 'Đã đặt lại điểm. Cùng làm tiếp nào!';
-    feedback.style.color = '#7A6A7B';
-    // Re-render current problem's choices
-    renderChoices();
-  });
 
   // Toggle settings collapse
   if(settingsToggle){
@@ -385,7 +359,6 @@
     // changing settings starts a new session context (but does not touch scores unless user wants)
     sessionHistory = [];
     hideHistory();
-    if(newSessionBtn){ newSessionBtn.hidden = true; }
     finished = false;
     resetProgressFromSettings();
     updateSettingsSummary();
@@ -398,7 +371,6 @@
   updateSettingsSummary();
   setSettingsCollapsed(false);
   hideHistory();
-  if(newSessionBtn){ newSessionBtn.hidden = true; }
   resetProgressFromSettings();
   nextQuestion();
 })();
