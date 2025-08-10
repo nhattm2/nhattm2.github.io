@@ -31,6 +31,8 @@
   // History state
   let sessionHistory = [];
   let wrongTriesForCurrent = 0;
+  // Track unique questions per session to avoid duplicates
+  let seenQuestions = new Set();
 
   function getSettings(){
     const range = Number((document.querySelector('input[name="range"]:checked')||{}).value || 10);
@@ -214,6 +216,8 @@
     qTotal = Number(count)||10;
     qIndex = 0;
     finished = false;
+    // reset seen unique questions for new session context
+    seenQuestions = new Set();
     updateProgress();
   }
 
@@ -225,24 +229,40 @@
     const { range, op } = getSettings();
     const max = range === 10 ? 9 : range; // <10 uses 0..9
 
-    let chosenOp = op;
-    if(op === 'mix') chosenOp = Math.random() < 0.5 ? '+' : '-';
     // reset wrong tries counter at the start of a new question
     wrongTriesForCurrent = 0;
 
-    // For first graders, avoid negative in subtraction and keep sums inside range.
-    let a, b;
-    if(chosenOp === '+'){
-      // ensure a + b <= max (for range 10 uses <=9 to keep within <10 scope)
-      const sumMax = max;
-      const s = randInt(0, sumMax);
-      a = randInt(0, s);
-      b = s - a;
-    }else{
-      // subtraction: ensure a >= b and both within 0..max
-      a = randInt(0, max);
-      b = randInt(0, a);
-    }
+    // Find a unique problem not seen in this session
+    let a, b, chosenOp, key;
+    let tries = 0;
+    const MAX_TRIES = 5000;
+    do {
+      chosenOp = op === 'mix' ? (Math.random() < 0.5 ? '+' : '-') : op;
+
+      if(chosenOp === '+'){
+        // ensure a + b <= max (for range 10 uses <=9 to keep within <10 scope)
+        const sumMax = max;
+        const s = randInt(0, sumMax);
+        a = randInt(0, s);
+        b = s - a;
+      } else {
+        // subtraction: ensure a >= b and both within 0..max
+        a = randInt(0, max);
+        b = randInt(0, a);
+      }
+      key = `${chosenOp}:${a},${b}`;
+      tries++;
+      if(tries > MAX_TRIES){
+        // Cannot find new unique question; finish early
+        finishSession();
+        feedback.textContent = '✅ Đã hết câu hỏi khác nhau trong phạm vi này!';
+        feedback.style.color = '#2e7d32';
+        return;
+      }
+    } while (seenQuestions.has(key));
+
+    // Mark as seen
+    seenQuestions.add(key);
 
     current.a = a; current.b = b; current.op = chosenOp;
     current.answer = chosenOp === '+' ? (a + b) : (a - b);
