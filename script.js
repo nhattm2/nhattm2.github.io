@@ -351,10 +351,10 @@
     });
   }
 
-  // When settings change, create new problem, update summary and collapse
+  // When settings change, create new problem and update summary (do not auto-collapse)
   settingsForm.addEventListener('change', (e)=>{
     if(e && e.target && e.target.name === 'theme'){
-      // theme handled above; avoid unnecessary collapse toggling? still proceed for consistency
+      // theme handled above; keep settings panel state as-is
     }
     // changing settings starts a new session context (but does not touch scores unless user wants)
     sessionHistory = [];
@@ -362,7 +362,7 @@
     finished = false;
     resetProgressFromSettings();
     updateSettingsSummary();
-    setSettingsCollapsed(true);
+    // Do not auto-collapse here; only collapse when user clicks the toggle button
     nextQuestion();
   });
 
