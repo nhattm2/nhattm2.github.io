@@ -10,6 +10,7 @@
   const wrongEl = document.getElementById('wrong');
   const streakEl = document.getElementById('streak');
   const starsEl = document.getElementById('stars');
+  const progressEl = document.getElementById('progress');
   const settingsSection = document.querySelector('.settings');
   const settingsForm = document.getElementById('settings-form');
   const settingsToggle = document.getElementById('settings-toggle');
@@ -20,11 +21,15 @@
 
   let correct = 0, wrong = 0, streak = 0;
   let current = { a:0, b:0, op:'+', answer:0 };
+  let qTotal = 10; // total questions in a session (default 10)
+  let qIndex = 0;  // current question index (1-based during session)
+  let finished = false;
 
   function getSettings(){
     const range = Number((document.querySelector('input[name="range"]:checked')||{}).value || 10);
     const op = (document.querySelector('input[name="op"]:checked')||{}).value || '+';
-    return { range, op };
+    const count = Number((document.querySelector('select[name="count"]')||{}).value || 10);
+    return { range, op, count };
   }
 
   function getRangeLabel(v){
@@ -110,13 +115,14 @@
       btn.textContent = String(opt);
       btn.setAttribute('aria-label', `Chọn ${opt}`);
       btn.addEventListener('click', ()=>{
+        if(finished) return;
         if(opt === current.answer){
           onCorrect();
           // brief highlight
           btn.classList.add('correct');
           setTimeout(()=>{
             btn.classList.remove('correct');
-            generateProblem();
+            nextQuestion();
           }, 600);
         }else{
           onWrong();
@@ -128,7 +134,56 @@
     });
   }
 
+  function updateProgress(){
+    if(progressEl){
+      const total = Math.max(1, qTotal||10);
+      const cur = Math.min(qIndex, total);
+      progressEl.textContent = `${cur}/${total}`;
+    }
+  }
+  function disableChoices(){
+    const buttons = choicesEl.querySelectorAll('button');
+    buttons.forEach(b=>{ b.disabled = true; b.setAttribute('aria-disabled','true'); });
+  }
+  function enableChoices(){
+    const buttons = choicesEl.querySelectorAll('button');
+    buttons.forEach(b=>{ b.disabled = false; b.removeAttribute('aria-disabled'); });
+  }
+  function finishSession(){
+    finished = true;
+    updateProgress();
+    disableChoices();
+    feedback.textContent = `🎯 Hoàn thành ${qTotal} câu!`; 
+    feedback.style.color = '#2e7d32';
+  }
+  function nextQuestion(){
+    if(finished) return;
+    if(qIndex === 0){
+      qIndex = 1;
+    }else{
+      qIndex++;
+    }
+    updateProgress();
+    if(qIndex > qTotal){
+      finishSession();
+      return;
+    }
+    generateProblem();
+  }
+
+  function resetProgressFromSettings(){
+    const { count } = getSettings();
+    qTotal = Number(count)||10;
+    qIndex = 0;
+    finished = false;
+    updateProgress();
+  }
+
   function generateProblem(){
+    if(finished){
+      disableChoices();
+      return;
+    }
     const { range, op } = getSettings();
     const max = range === 10 ? 9 : range; // <10 uses 0..9
 
@@ -158,12 +213,16 @@
     feedback.textContent = 'Hãy chọn đáp án đúng nhé!';
     feedback.style.color = '#7A6A7B';
 
+    enableChoices();
     renderChoices();
   }
 
   function updateStars(){
-    // up to 5 stars based on streak
-    const filled = Math.min(5, Math.floor(streak/3) + (streak>0?1:0));
+    // up to 5 stars based on streak relative to total questions
+    // Ensure that a full-correct run (streak === qTotal) yields 5/5 stars
+    const total = Math.max(1, qTotal || 1);
+    const ratio = Math.max(0, Math.min(1, streak / total));
+    const filled = Math.min(5, Math.max(0, Math.ceil(ratio * 5)));
     let s = '';
     for(let i=0;i<5;i++) s += i < filled ? '⭐️' : '☆';
     starsEl.textContent = s;
@@ -187,7 +246,14 @@
     feedback.style.color = '#b00020';
   }
 
-  newBtn.addEventListener('click', generateProblem);
+  newBtn.addEventListener('click', ()=>{
+    if(finished){
+      resetProgressFromSettings();
+      nextQuestion();
+    }else{
+      nextQuestion();
+    }
+  });
   resetBtn.addEventListener('click', ()=>{
     correct = 0; wrong = 0; streak = 0;
     correctEl.textContent = '0';
@@ -235,14 +301,16 @@
     if(e && e.target && e.target.name === 'theme'){
       // theme handled above; avoid unnecessary collapse toggling? still proceed for consistency
     }
-    generateProblem();
+    resetProgressFromSettings();
     updateSettingsSummary();
     setSettingsCollapsed(true);
+    nextQuestion();
   });
 
   // First load
   updateStars();
   updateSettingsSummary();
   setSettingsCollapsed(false);
-  generateProblem();
+  resetProgressFromSettings();
+  nextQuestion();
 })();

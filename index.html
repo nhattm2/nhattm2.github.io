@@ -44,6 +44,16 @@
           <label class="chip"><input type="radio" name="op" value="mix"> Cả hai (±)</label>
         </fieldset>
         <fieldset>
+          <legend>Số câu hỏi</legend>
+          <label for="count-select" class="visually-hidden">Chọn số câu hỏi</label>
+          <select id="count-select" name="count" class="chip" aria-label="Chọn số câu hỏi">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </fieldset>
+        <fieldset>
           <legend>Giao diện</legend>
           <label for="theme-select" class="visually-hidden">Chọn theme</label>
           <select id="theme-select" name="theme" class="chip" aria-label="Chọn theme">
@@ -67,6 +77,7 @@
         <div class="score-item"><span>Đúng</span><strong id="correct">0</strong></div>
         <div class="score-item"><span>Sai</span><strong id="wrong">0</strong></div>
         <div class="score-item"><span>Liên tiếp</span><strong id="streak">0</strong></div>
+        <div class="score-item"><span>Câu</span><strong id="progress">0/10</strong></div>
       </div>
       <div class="stars" id="stars" aria-hidden="true">⭐️⭐️⭐️⭐️⭐️</div>
     </section>
