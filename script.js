@@ -18,12 +18,19 @@
   const summaryRange = document.getElementById('summary-range');
   const summaryOp = document.getElementById('summary-op');
   const themeSelect = document.getElementById('theme-select');
+  // History & session elements
+  const historySection = document.querySelector('.history');
+  const historyList = document.getElementById('history-list');
+  const newSessionBtn = document.getElementById('new-session');
 
   let correct = 0, wrong = 0, streak = 0;
   let current = { a:0, b:0, op:'+', answer:0 };
   let qTotal = 10; // total questions in a session (default 10)
   let qIndex = 0;  // current question index (1-based during session)
   let finished = false;
+  // History state
+  let sessionHistory = [];
+  let wrongTriesForCurrent = 0;
 
   function getSettings(){
     const range = Number((document.querySelector('input[name="range"]:checked')||{}).value || 10);
@@ -117,6 +124,14 @@
       btn.addEventListener('click', ()=>{
         if(finished) return;
         if(opt === current.answer){
+          // record this question result (correct selection)
+          sessionHistory.push({
+            a: current.a,
+            b: current.b,
+            op: current.op,
+            correct: current.answer,
+            wrongTries: wrongTriesForCurrent
+          });
           onCorrect();
           // brief highlight
           btn.classList.add('correct');
@@ -125,6 +140,8 @@
             nextQuestion();
           }, 600);
         }else{
+          // count wrong tries for current question
+          wrongTriesForCurrent++;
           onWrong();
           btn.classList.add('wrong');
           setTimeout(()=>btn.classList.remove('wrong'), 400);
@@ -149,12 +166,33 @@
     const buttons = choicesEl.querySelectorAll('button');
     buttons.forEach(b=>{ b.disabled = false; b.removeAttribute('aria-disabled'); });
   }
+  function renderHistory(){
+    if(!historyList) return;
+    historyList.innerHTML = '';
+    sessionHistory.forEach((item, idx)=>{
+      const li = document.createElement('li');
+      const wrongTxt = item.wrongTries > 0 ? ` • Sai ${item.wrongTries} lần trước khi đúng` : '';
+      li.textContent = `${idx+1}) ${item.a} ${item.op} ${item.b} = ${item.correct} ${wrongTxt}`;
+      historyList.appendChild(li);
+    });
+  }
+  function showHistory(){
+    if(historySection){ historySection.hidden = false; }
+    renderHistory();
+  }
+  function hideHistory(){
+    if(historySection){ historySection.hidden = true; }
+    if(historyList){ historyList.innerHTML = ''; }
+  }
   function finishSession(){
     finished = true;
     updateProgress();
     disableChoices();
     feedback.textContent = `🎯 Hoàn thành ${qTotal} câu!`; 
     feedback.style.color = '#2e7d32';
+    // Show history and new-session button
+    showHistory();
+    if(newSessionBtn){ newSessionBtn.hidden = false; }
   }
   function nextQuestion(){
     if(finished) return;
@@ -189,6 +227,8 @@
 
     let chosenOp = op;
     if(op === 'mix') chosenOp = Math.random() < 0.5 ? '+' : '-';
+    // reset wrong tries counter at the start of a new question
+    wrongTriesForCurrent = 0;
 
     // For first graders, avoid negative in subtraction and keep sums inside range.
     let a, b;
@@ -248,12 +288,33 @@
 
   newBtn.addEventListener('click', ()=>{
     if(finished){
+      // If finished, allow continuing with same scores but new session of questions
       resetProgressFromSettings();
+      // Do not clear history automatically here to preserve previous run until user clicks "Làm bài mới"
       nextQuestion();
     }else{
       nextQuestion();
     }
   });
+  if(newSessionBtn){
+    newSessionBtn.hidden = true;
+    newSessionBtn.addEventListener('click', ()=>{
+      // Full new session: reset everything
+      correct = 0; wrong = 0; streak = 0;
+      correctEl.textContent = '0';
+      wrongEl.textContent = '0';
+      streakEl.textContent = '0';
+      updateStars();
+      sessionHistory = [];
+      hideHistory();
+      finished = false;
+      resetProgressFromSettings();
+      feedback.textContent = 'Bắt đầu bài mới! Chúc con học tốt!';
+      feedback.style.color = '#7A6A7B';
+      if(newSessionBtn){ newSessionBtn.hidden = true; }
+      nextQuestion();
+    });
+  }
   resetBtn.addEventListener('click', ()=>{
     correct = 0; wrong = 0; streak = 0;
     correctEl.textContent = '0';
@@ -301,6 +362,11 @@
     if(e && e.target && e.target.name === 'theme'){
       // theme handled above; avoid unnecessary collapse toggling? still proceed for consistency
     }
+    // changing settings starts a new session context (but does not touch scores unless user wants)
+    sessionHistory = [];
+    hideHistory();
+    if(newSessionBtn){ newSessionBtn.hidden = true; }
+    finished = false;
     resetProgressFromSettings();
     updateSettingsSummary();
     setSettingsCollapsed(true);
@@ -311,6 +377,8 @@
   updateStars();
   updateSettingsSummary();
   setSettingsCollapsed(false);
+  hideHistory();
+  if(newSessionBtn){ newSessionBtn.hidden = true; }
   resetProgressFromSettings();
   nextQuestion();
 })();

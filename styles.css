@@ -110,6 +110,10 @@ legend{font-weight:700; margin-bottom:6px}
 .btn.success{background:var(--success); color:white}
 .btn:active{transform:translateY(1px)}
 
+/* History */
+.history-list{ margin: 6px 0 0; padding-left: 20px; }
+.history-list li{ padding: 4px 0; color: var(--muted); }
+
 .app-footer{padding:20px; text-align:center; color:var(--muted)}
 
 /* Theme variants */
