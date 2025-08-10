@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gạo học Toán • Cộng Trừ vui vẻ</title>
+  <meta name="description" content="Luyện tập cộng trừ dành cho bé lớp 1 với giao diện dễ thương. Phạm vi: <10, 20, 100, >100." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' x='6' font-size='48'%3E%F0%9F%8D%BD%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-emoji" aria-hidden="true">🧮</span>
+      <h1>Gạo học Toán</h1>
+    </div>
+    <p class="subtitle">Cộng • Trừ • Vui vẻ</p>
+  </header>
+
+  <main class="container">
+    <section class="card settings" aria-labelledby="settings-title">
+      <h2 id="settings-title" class="settings-header">
+        Cài đặt
+        <button type="button" id="settings-toggle" class="btn light settings-toggle" aria-expanded="true" aria-controls="settings-form">Thu gọn</button>
+      </h2>
+      <div class="settings-summary" id="settings-summary" aria-live="polite" hidden>
+        Phạm vi: <span id="summary-range"></span> • Phép tính: <span id="summary-op"></span>
+      </div>
+      <form id="settings-form">
+        <fieldset>
+          <legend>Phạm vi số</legend>
+          <label class="chip"><input type="radio" name="range" value="10" checked> &lt; 10</label>
+          <label class="chip"><input type="radio" name="range" value="20"> 20</label>
+          <label class="chip"><input type="radio" name="range" value="100"> 100</label>
+          <label class="chip"><input type="radio" name="range" value="1000"> &gt; 100</label>
+        </fieldset>
+        <fieldset>
+          <legend>Phép tính</legend>
+          <label class="chip"><input type="radio" name="op" value="+" checked> Cộng (+)</label>
+          <label class="chip"><input type="radio" name="op" value="-"> Trừ (−)</label>
+          <label class="chip"><input type="radio" name="op" value="mix"> Cả hai (±)</label>
+        </fieldset>
+        <div class="controls">
+          <button type="button" id="new-problem" class="btn primary">Câu mới</button>
+          <button type="button" id="reset-score" class="btn light">Đặt lại điểm</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card game" aria-labelledby="game-title">
+      <h2 id="game-title">Bài toán</h2>
+      <div class="problem" aria-live="polite">
+        <span id="a">?</span>
+        <span id="op">+</span>
+        <span id="b">?</span>
+        <span>=</span>
+        <div id="choices" class="choices" aria-label="Chọn đáp án" role="group"></div>
+      </div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite">Hãy chọn đáp án đúng nhé!</div>
+    </section>
+
+    <section class="card scoreboard" aria-labelledby="score-title">
+      <h2 id="score-title">Điểm số</h2>
+      <div class="scores">
+        <div class="score-item"><span>Đúng</span><strong id="correct">0</strong></div>
+        <div class="score-item"><span>Sai</span><strong id="wrong">0</strong></div>
+        <div class="score-item"><span>Liên tiếp</span><strong id="streak">0</strong></div>
+      </div>
+      <div class="stars" id="stars" aria-hidden="true">⭐️⭐️⭐️⭐️⭐️</div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Made with ❤️ cho các bé lớp 1 • Có thể triển khai trên GitHub Pages</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
