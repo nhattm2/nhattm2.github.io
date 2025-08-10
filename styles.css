@@ -89,11 +89,14 @@ legend{font-weight:700; margin-bottom:6px}
 }
 .problem #a,.problem #b,.problem #op{min-width:48px; text-align:center}
 .choices{
-  display:grid; grid-template-columns: repeat(2, minmax(100px, 1fr)); gap:12px; align-items:stretch; min-width:220px;
+  display:grid; grid-template-columns: repeat(2, minmax(140px, 1fr)); gap:16px; align-items:stretch; min-width:240px;
 }
-.choice-btn{font-size:24px; padding:14px 12px; background:var(--soft-bg); color:var(--primary-ink); border:2px solid var(--soft-border)}
+.choice-btn{width:100%; font-size:28px; padding:18px 16px; min-height:64px; border-radius:16px; background:var(--soft-bg); color:var(--primary-ink); border:2px solid var(--primary); border-color:var(--primary-ink)}
 .choice-btn.correct{background:var(--success); color:white; border-color:var(--success)}
 .choice-btn.wrong{background:var(--choice-wrong-bg); color:var(--choice-wrong-ink); border-color:var(--choice-wrong-border)}
+@media (max-width: 520px){
+  .choices{ grid-template-columns: 1fr; }
+}
 .feedback{margin-top:12px; text-align:center; font-size:22px; color:var(--muted)}
 
 /* Score */
@@ -104,7 +107,7 @@ legend{font-weight:700; margin-bottom:6px}
 .stars{margin-top:10px; text-align:center; font-size:28px}
 
 /* Buttons */
-.btn{border:none; border-radius:14px; padding:10px 14px; font-size:16px; cursor:pointer; font-weight:700}
+.btn{border-radius:14px; padding:10px 14px; font-size:16px; cursor:pointer; font-weight:700}
 .btn.primary{background:var(--primary); color:white}
 .btn.light{background:var(--soft-bg); color:var(--primary-ink); border:2px solid var(--soft-border)}
 .btn.success{background:var(--success); color:white}
