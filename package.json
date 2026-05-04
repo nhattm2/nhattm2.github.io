@@ -8,8 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
-    "predeploy": "pnpm build",
-    "deploy": "gh-pages -d dist -b gh-pages"
+    "deploy": "pnpm build && gh-pages -d dist -b gh-pages -t"
   },
   "dependencies": {
     "react": "^18.3.1",
