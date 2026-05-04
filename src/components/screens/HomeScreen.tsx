@@ -1,11 +1,15 @@
+import { useEffect, useRef, useState } from 'react';
 import type { Op, Progress, Route } from '@/types';
 import { BoPanda } from '@/components/ui/BoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { StarBar } from '@/components/ui/StarBar';
 
+const ARM_WINDOW_MS = 3000;
+
 interface HomeScreenProps {
   onNavigate: (next: Route) => void;
   progress: Progress;
+  onResetProgress: () => void;
 }
 
 interface OpCardProps {
@@ -83,8 +87,38 @@ function OpCard({ label, sym, emoji, desc, color, bg, onClick }: OpCardProps) {
   );
 }
 
-export function HomeScreen({ onNavigate, progress }: HomeScreenProps) {
+export function HomeScreen({ onNavigate, progress, onResetProgress }: HomeScreenProps) {
   const go = (op: Op) => onNavigate({ screen: 'modes', op });
+
+  const [resetArmed, setResetArmed] = useState(false);
+  const armTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (armTimerRef.current !== null) window.clearTimeout(armTimerRef.current);
+    };
+  }, []);
+
+  function clearArmTimer() {
+    if (armTimerRef.current !== null) {
+      window.clearTimeout(armTimerRef.current);
+      armTimerRef.current = null;
+    }
+  }
+
+  function handleResetStars() {
+    if (resetArmed) {
+      clearArmTimer();
+      onResetProgress();
+      return;
+    }
+    setResetArmed(true);
+    clearArmTimer();
+    armTimerRef.current = window.setTimeout(() => {
+      setResetArmed(false);
+      armTimerRef.current = null;
+    }, ARM_WINDOW_MS);
+  }
   return (
     <div
       style={{
@@ -190,6 +224,29 @@ export function HomeScreen({ onNavigate, progress }: HomeScreenProps) {
           >
             {progress.badges.length}
           </span>
+        </button>
+        <button
+          onClick={handleResetStars}
+          aria-label={resetArmed ? 'Bấm nữa để xoá sao' : 'Reset sao'}
+          aria-pressed={resetArmed}
+          title={resetArmed ? 'Bấm nữa để xoá' : 'Reset sao'}
+          style={{
+            marginLeft: 'auto',
+            background: resetArmed ? '#ffe2e2' : '#fff',
+            color: '#d04060',
+            padding: '10px 14px',
+            borderRadius: 999,
+            fontSize: 13,
+            fontWeight: 800,
+            border: resetArmed ? '2px solid #ffb3b3' : '2px solid transparent',
+            boxShadow: '0 3px 0 rgba(74, 51, 38, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'background 0.15s, border-color 0.15s',
+          }}
+        >
+          {resetArmed ? '⚠️ Bấm nữa để xoá' : '↻ Reset sao'}
         </button>
       </div>
     </div>

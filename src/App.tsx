@@ -29,7 +29,7 @@ export function App() {
     setAppKey((k) => k + 1);
   }
 
-  const content = <GardenApp key={appKey} />;
+  const content = <GardenApp key={appKey} onResetProgress={resetProgress} />;
 
   return (
     <>

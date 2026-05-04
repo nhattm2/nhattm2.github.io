@@ -10,7 +10,11 @@ import { BadgesScreen } from '@/components/screens/BadgesScreen';
 
 const HOME: Route = { screen: 'home' };
 
-export function GardenApp() {
+interface GardenAppProps {
+  onResetProgress: () => void;
+}
+
+export function GardenApp({ onResetProgress }: GardenAppProps) {
   const [route, setRoute] = useState<Route>(HOME);
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
   const history = useRef<Route[]>([HOME]);
@@ -48,7 +52,13 @@ export function GardenApp() {
         <span style={{ bottom: '6%', right: '8%', fontSize: 32 }}>🌿</span>
       </div>
 
-      {route.screen === 'home' && <HomeScreen onNavigate={navigate} progress={progress} />}
+      {route.screen === 'home' && (
+        <HomeScreen
+          onNavigate={navigate}
+          progress={progress}
+          onResetProgress={onResetProgress}
+        />
+      )}
       {route.screen === 'modes' && (
         <ModeScreen op={route.op} onNavigate={navigate} onBack={back} progress={progress} />
       )}
