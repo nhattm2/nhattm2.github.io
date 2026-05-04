@@ -30,8 +30,8 @@ export function PlayScreen({
 }: PlayScreenProps) {
   const [problem, setProblem] = useState(() => genProblem(op, level));
   const [choices, setChoices] = useState<number[]>(() => genChoices(problem));
-  const [picked, setPicked] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
+  const [wrongPicks, setWrongPicks] = useState<number[]>([]);
+  const [outcome, setOutcome] = useState<'pending' | 'correct' | 'revealed'>('pending');
   const [streak, setStreak] = useState(0);
   const [score, setScore] = useState(0);
   const [questionNum, setQuestionNum] = useState(1);
@@ -57,8 +57,8 @@ export function PlayScreen({
 
   useEffect(() => {
     setChoices(genChoices(problem));
-    setPicked(null);
-    setFeedback(null);
+    setWrongPicks([]);
+    setOutcome('pending');
   }, [problem]);
 
   function nextProblem() {
@@ -71,30 +71,45 @@ export function PlayScreen({
   }
 
   function handlePick(i: number) {
-    if (picked !== null || done) return;
-    setPicked(i);
-    if (choices[i] === problem.ans) {
-      setFeedback('correct');
+    if (outcome !== 'pending' || done) return;
+    if (wrongPicks.includes(i)) return;
+
+    const isCorrect = choices[i] === problem.ans;
+
+    if (isCorrect) {
+      setOutcome('correct');
       setBoMood('celebrate');
-      setStreak((s) => s + 1);
-      setScore((s) => s + 1);
-      setShowConfetti(true);
-      setFloatScore(`+${level.stars}⭐`);
       Sounds.correct();
-      window.setTimeout(() => Sounds.star(), 200);
-      onCorrect(level.stars, op);
+
+      const firstTry = wrongPicks.length === 0;
+      if (firstTry) {
+        setStreak((s) => s + 1);
+        setScore((s) => s + 1);
+        setShowConfetti(true);
+        setFloatScore(`+${level.stars}⭐`);
+        window.setTimeout(() => Sounds.star(), 200);
+        onCorrect(level.stars, op);
+      }
+
       window.setTimeout(() => {
         setShowConfetti(false);
         setFloatScore(null);
         setBoMood('happy');
       }, 1200);
       window.setTimeout(() => nextProblem(), 1100);
-    } else {
-      setFeedback('wrong');
-      setBoMood('sad');
-      setStreak(0);
-      Sounds.wrong();
-      window.setTimeout(() => setBoMood('happy'), 1500);
+      return;
+    }
+
+    const nextWrongs = [...wrongPicks, i];
+    setWrongPicks(nextWrongs);
+    setBoMood('sad');
+    setStreak(0);
+    Sounds.wrong();
+    window.setTimeout(() => setBoMood('happy'), 1500);
+
+    if (nextWrongs.length >= 2) {
+      setOutcome('revealed');
+      window.setTimeout(() => nextProblem(), 2400);
     }
   }
 
@@ -201,13 +216,17 @@ export function PlayScreen({
           <BoPanda size={64} mood={boMood} />
           <div style={{ flex: 1, paddingTop: 8 }}>
             <Bubble>
-              {feedback === 'correct'
+              {outcome === 'correct' && wrongPicks.length === 0
                 ? 'Bé giỏi quá!'
-                : feedback === 'wrong'
-                  ? 'Thử lại nha bé!'
-                  : streak >= 3
-                    ? `Liên tiếp ${streak} câu đúng!`
-                    : 'Bé thử nhé!'}
+                : outcome === 'correct'
+                  ? 'Tốt rồi nha bé!'
+                  : outcome === 'revealed'
+                    ? `Đáp án là ${problem.ans} nhé!`
+                    : wrongPicks.length > 0
+                      ? 'Thử lại nha bé!'
+                      : streak >= 3
+                        ? `Liên tiếp ${streak} câu đúng!`
+                        : 'Bé thử nhé!'}
             </Bubble>
           </div>
         </div>
@@ -239,17 +258,18 @@ export function PlayScreen({
               background: '#fff7ee',
               border: '3px dashed #ffb59a',
               borderRadius: 16,
-              color: feedback === 'correct' ? '#5fcfa0' : 'var(--ink-soft)',
+              color: outcome !== 'pending' ? '#5fcfa0' : 'var(--ink-soft)',
               fontSize: 44,
             }}
           >
-            {feedback === 'correct' ? problem.ans : '?'}
+            {outcome !== 'pending' ? problem.ans : '?'}
           </span>
         </div>
 
         {showHint && (
           <div
-            className={feedback === 'wrong' ? 'shake' : ''}
+            key={`shake-${wrongPicks.length}`}
+            className={wrongPicks.length > 0 ? 'shake' : ''}
             style={{ display: 'flex', justifyContent: 'center' }}
           >
             <VisualHint problem={problem} hintIcon={hintIcon} />
@@ -283,16 +303,18 @@ export function PlayScreen({
         }}
       >
         {choices.map((c, i) => {
-          const isPicked = picked === i;
-          const isCorrect = isPicked && c === problem.ans;
-          const isWrong = isPicked && c !== problem.ans;
+          const isWrong = wrongPicks.includes(i);
+          const isAnswer = c === problem.ans;
+          const showAsCorrect = isAnswer && outcome !== 'pending';
+          const isLocked = outcome !== 'pending' || isWrong;
+          const dim = isLocked && !showAsCorrect && !isWrong;
           return (
             <button
               key={i}
               onClick={() => handlePick(i)}
-              disabled={picked !== null && !isWrong}
+              disabled={isLocked}
               style={{
-                background: isCorrect ? '#a8e6c8' : isWrong ? '#ffb8b8' : '#fff',
+                background: showAsCorrect ? '#a8e6c8' : isWrong ? '#ffb8b8' : '#fff',
                 color: 'var(--ink)',
                 borderRadius: 20,
                 padding: '20px 16px',
@@ -302,16 +324,16 @@ export function PlayScreen({
                 boxShadow: 'var(--shadow)',
                 position: 'relative',
                 transition: 'transform 0.1s',
-                opacity: picked !== null && !isPicked ? 0.5 : 1,
+                opacity: dim ? 0.5 : 1,
               }}
               onMouseDown={(e) => {
-                if (picked === null) e.currentTarget.style.transform = 'translateY(3px)';
+                if (!isLocked) e.currentTarget.style.transform = 'translateY(3px)';
               }}
               onMouseUp={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
               onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
             >
               {c}
-              {isCorrect && (
+              {showAsCorrect && (
                 <span style={{ position: 'absolute', top: 6, right: 10, fontSize: 18 }}>
                   ✓
                 </span>
