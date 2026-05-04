@@ -1,0 +1,21 @@
+:root {
+  --bg: #fff7ee;
+  --bg-2: #ffeede;
+  --ink: #4a3326;
+  --ink-soft: #8a7160;
+  --peach: #ffb59a;
+  --peach-deep: #ff8a6b;
+  --mint: #a8e6c8;
+  --mint-deep: #5fcfa0;
+  --sun: #ffd56b;
+  --sun-deep: #e6a932;
+  --sky: #b8dcf0;
+  --sky-deep: #5b9fd1;
+  --card: #ffffff;
+  --shadow: 0 4px 0 rgba(74, 51, 38, 0.08), 0 12px 32px rgba(255, 138, 107, 0.15);
+  --shadow-press: 0 2px 0 rgba(74, 51, 38, 0.08);
+  --radius: 24px;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --ease-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

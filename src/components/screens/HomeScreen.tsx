@@ -1,0 +1,197 @@
+import type { Op, Progress, Route } from '@/types';
+import { BoPanda } from '@/components/ui/BoPanda';
+import { Bubble } from '@/components/ui/Bubble';
+import { StarBar } from '@/components/ui/StarBar';
+
+interface HomeScreenProps {
+  onNavigate: (next: Route) => void;
+  progress: Progress;
+}
+
+interface OpCardProps {
+  label: string;
+  sym: string;
+  emoji: string;
+  desc: string;
+  color: string;
+  bg: string;
+  onClick: () => void;
+}
+
+function OpCard({ label, sym, emoji, desc, color, bg, onClick }: OpCardProps) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        background: bg,
+        borderRadius: 24,
+        padding: 16,
+        textAlign: 'left',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: 'var(--shadow)',
+        transition: 'transform 0.15s, box-shadow 0.15s',
+        color: 'var(--ink)',
+      }}
+      onMouseDown={(e) => (e.currentTarget.style.transform = 'translateY(2px)')}
+      onMouseUp={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: 8,
+          right: 10,
+          fontSize: 30,
+          opacity: 0.85,
+          pointerEvents: 'none',
+        }}
+      >
+        {emoji}
+      </div>
+      <div
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: 12,
+          background: color,
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 28,
+          fontWeight: 800,
+          marginBottom: 10,
+          boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.1)',
+        }}
+      >
+        {sym}
+      </div>
+      <div style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.15 }}>{label}</div>
+      <div
+        style={{
+          fontSize: 12,
+          color: 'var(--ink-soft)',
+          marginTop: 4,
+          lineHeight: 1.3,
+        }}
+      >
+        {desc}
+      </div>
+    </button>
+  );
+}
+
+export function HomeScreen({ onNavigate, progress }: HomeScreenProps) {
+  const go = (op: Op) => onNavigate({ screen: 'modes', op });
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        padding: '32px 36px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          style={{
+            fontWeight: 800,
+            fontSize: 14,
+            color: 'var(--ink-soft)',
+            letterSpacing: '0.08em',
+          }}
+        >
+          🌸 VƯỜN CỦA BO
+        </div>
+        <StarBar stars={progress.stars} />
+      </header>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 24 }}>
+        <BoPanda size={120} />
+        <div>
+          <Bubble>Chào bé! Hôm nay học gì nào?</Bubble>
+        </div>
+      </div>
+
+      <nav
+        aria-label="Phép tính"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 16,
+          marginTop: 28,
+        }}
+      >
+        <OpCard
+          label="Phép Cộng"
+          sym="+"
+          emoji="🍎"
+          desc="Cộng các quả táo"
+          color="#ff8a6b"
+          bg="#ffeede"
+          onClick={() => go('add')}
+        />
+        <OpCard
+          label="Phép Trừ"
+          sym="−"
+          emoji="🍓"
+          desc="Bớt đi quả dâu"
+          color="#5fcfa0"
+          bg="#dcf5e7"
+          onClick={() => go('sub')}
+        />
+        <OpCard
+          label="Phép Nhân"
+          sym="×"
+          emoji="🐥"
+          desc="Đếm theo nhóm"
+          color="#e6a932"
+          bg="#fff0c4"
+          onClick={() => go('mul')}
+        />
+        <OpCard
+          label="Phép Chia"
+          sym="÷"
+          emoji="🐰"
+          desc="Chia đều thành phần"
+          color="#5b9fd1"
+          bg="#dcecf7"
+          onClick={() => go('div')}
+        />
+      </nav>
+
+      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button
+          onClick={() => onNavigate({ screen: 'badges' })}
+          style={{
+            background: '#fff',
+            color: 'var(--ink)',
+            padding: '12px 18px',
+            borderRadius: 999,
+            fontSize: 15,
+            boxShadow: '0 3px 0 rgba(74, 51, 38, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          🏆 Huy hiệu của bé
+          <span
+            style={{
+              background: 'var(--sun)',
+              borderRadius: 999,
+              padding: '2px 8px',
+              fontSize: 13,
+              fontWeight: 800,
+            }}
+          >
+            {progress.badges.length}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+}

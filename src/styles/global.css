@@ -1,0 +1,60 @@
+@import './tokens.css';
+@import './animations.css';
+@import './chrome.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg-2);
+  color: var(--ink);
+  font-family: 'Nunito', system-ui, sans-serif;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  color: inherit;
+  background: transparent;
+}
+
+button:focus {
+  outline: none;
+}
+button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Baloo 2', system-ui, sans-serif;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.confetti {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: confetti-fall 1.6s ease-out forwards;
+}
