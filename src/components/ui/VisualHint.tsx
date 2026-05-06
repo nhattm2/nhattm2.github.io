@@ -200,15 +200,23 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
         </div>
       );
     }
+    const total = a * b;
+    const iconSize = total > 64 ? 13 : total > 36 ? 16 : total > 20 ? 19 : 22;
+    const rowGap = total > 36 ? 3 : 6;
+    const cellGap = total > 36 ? 2 : 4;
     return (
       <div style={{ ...BOX, border: '2px dashed #ffd56b' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: rowGap, alignItems: 'center' }}>
           {Array.from({ length: a }).map((_, i) => (
-            <div key={i} style={{ display: 'flex', gap: 4 }}>
+            <div key={i} style={{ display: 'flex', gap: cellGap }}>
               {Array.from({ length: b }).map((_, j) => (
                 <span
                   key={j}
-                  style={{ fontSize: 22, animation: `pop-in 0.3s ${(i * b + j) * 0.02}s both` }}
+                  style={{
+                    fontSize: iconSize,
+                    lineHeight: 1,
+                    animation: `pop-in 0.3s ${(i * b + j) * 0.02}s both`,
+                  }}
                 >
                   {hintIcon}
                 </span>
@@ -225,6 +233,10 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
 
   // op === 'div' — always show inverse-of-multiplication
   const perGroup = Math.floor(a / b);
+  const totalDiv = b * perGroup;
+  const divIconSize = totalDiv > 64 ? 12 : totalDiv > 36 ? 14 : totalDiv > 20 ? 16 : 18;
+  const divBoxPad = totalDiv > 36 ? 4 : 8;
+  const divBoxMin = totalDiv > 36 ? 40 : 60;
   return (
     <div style={{ ...BOX, border: '2px dashed #b8dcf0' }}>
       <div
@@ -243,24 +255,24 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
         <span style={{ color: '#5fa9cf', fontWeight: 800 }}>=</span>
         <span style={{ ...NUM_CHIP, background: '#dff0fa', color: '#2c6c8c' }}>{a}</span>
       </div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
         {Array.from({ length: b }).map((_, i) => (
           <div
             key={i}
             style={{
               background: '#fff',
               borderRadius: 12,
-              padding: 8,
+              padding: divBoxPad,
               border: '2px solid #b8dcf0',
-              minWidth: 60,
+              minWidth: divBoxMin,
               display: 'flex',
               flexWrap: 'wrap',
-              gap: 3,
+              gap: 2,
               justifyContent: 'center',
             }}
           >
             {Array.from({ length: perGroup }).map((_, j) => (
-              <span key={j} style={{ fontSize: 18 }}>
+              <span key={j} style={{ fontSize: divIconSize, lineHeight: 1 }}>
                 {hintIcon}
               </span>
             ))}

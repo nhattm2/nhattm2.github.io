@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Op, Progress, Route } from '@/types';
-import { BoPanda } from '@/components/ui/BoPanda';
+import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { StarBar } from '@/components/ui/StarBar';
 
@@ -138,13 +138,13 @@ export function HomeScreen({ onNavigate, progress, onResetProgress }: HomeScreen
             letterSpacing: '0.08em',
           }}
         >
-          🌸 VƯỜN CỦA BO
+          🌸 VƯỜN CỦA GẠO
         </div>
         <StarBar stars={progress.stars} />
       </header>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginTop: 24 }}>
-        <BoPanda size={120} />
+        <GaoPanda size={120} />
         <div>
           <Bubble>Chào bé! Hôm nay học gì nào?</Bubble>
         </div>

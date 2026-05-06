@@ -1,11 +1,11 @@
 import type { Mood } from '@/types';
 
-interface BoPandaProps {
+interface GaoPandaProps {
   size?: number;
   mood?: Mood;
 }
 
-export function BoPanda({ size = 100, mood = 'happy' }: BoPandaProps) {
+export function GaoPanda({ size = 100, mood = 'happy' }: GaoPandaProps) {
   const eyeY = mood === 'thinking' ? '38%' : '40%';
   const mouthEmoji: Record<Mood, string> = {
     happy: '◡',

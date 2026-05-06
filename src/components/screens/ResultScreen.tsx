@@ -1,5 +1,5 @@
 import type { Mode } from '@/types';
-import { BoPanda } from '@/components/ui/BoPanda';
+import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Confetti } from '@/components/ui/Confetti';
 
 interface ResultScreenProps {
@@ -32,7 +32,7 @@ export function ResultScreen({ score, total, mode, onBack, onRetry }: ResultScre
       }}
     >
       <Confetti active={stars >= 2} />
-      <BoPanda size={140} mood={stars >= 2 ? 'celebrate' : 'happy'} />
+      <GaoPanda size={140} mood={stars >= 2 ? 'celebrate' : 'happy'} />
       <h1 style={{ fontSize: 36, color: 'var(--ink)' }}>{message}</h1>
       <div style={{ display: 'flex', gap: 8 }} aria-label={`${stars} trên 3 sao`}>
         {[0, 1, 2].map((i) => (

@@ -1,5 +1,5 @@
 import type { Progress } from '@/types';
-import { BoPanda } from '@/components/ui/BoPanda';
+import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { TopBar } from '@/components/ui/TopBar';
 import { BADGES } from '@/lib/math-engine';
@@ -25,7 +25,7 @@ export function BadgesScreen({ progress, onBack }: BadgesScreenProps) {
     >
       <TopBar onBack={onBack} title="Huy hiệu của bé" stars={progress.stars} />
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 14 }}>
-        <BoPanda size={70} />
+        <GaoPanda size={70} />
         <Bubble>
           Bé đã đạt {owned.size}/{total} huy hiệu!
         </Bubble>

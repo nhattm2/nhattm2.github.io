@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Op, Problem } from '@/types';
-import { BoPanda } from '@/components/ui/BoPanda';
+import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { HintRow } from '@/components/ui/HintRow';
 import { OPS } from '@/lib/math-engine';
@@ -225,7 +225,7 @@ export function LearnScreen({ op, onBack }: LearnScreenProps) {
             flex: 1,
           }}
         >
-          Học {OPS[op].name} cùng Bo
+          Học {OPS[op].name} cùng Gạo
         </div>
         <div
           style={{
@@ -257,7 +257,7 @@ export function LearnScreen({ op, onBack }: LearnScreenProps) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginTop: 18 }}>
-        <BoPanda size={70} mood={step === steps.length - 1 ? 'celebrate' : 'happy'} />
+        <GaoPanda size={70} mood={step === steps.length - 1 ? 'celebrate' : 'happy'} />
         <div style={{ flex: 1, paddingTop: 6 }}>
           <Bubble>{cur.narrate(example)}</Bubble>
         </div>

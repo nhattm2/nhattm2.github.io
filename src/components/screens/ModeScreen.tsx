@@ -1,5 +1,5 @@
 import type { Op, Progress, Route } from '@/types';
-import { BoPanda } from '@/components/ui/BoPanda';
+import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { TopBar } from '@/components/ui/TopBar';
 import { OPS } from '@/lib/math-engine';
@@ -73,14 +73,14 @@ export function ModeScreen({ op, onNavigate, onBack, progress }: ModeScreenProps
     >
       <TopBar onBack={onBack} title={`Phép ${opMeta.name}`} stars={progress.stars} />
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 12 }}>
-        <BoPanda size={80} />
+        <GaoPanda size={80} />
         <Bubble>Bé chọn cách học nhé:</Bubble>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
         <ModeCard
           icon="📖"
           color="#a8e6c8"
-          title="Học cùng Bo"
+          title="Học cùng Gạo"
           desc="Xem ví dụ minh hoạ từng bước"
           onClick={() => onNavigate({ screen: 'learn', op })}
         />

@@ -113,13 +113,15 @@ export function pickHintMethod(problem: Problem): HintMethod {
   const { op, a, b, ans } = problem;
   if (op === 'add') {
     if (Math.min(a, b) <= 3) return 'count-on';
-    if (ans > 10) return 'make-ten';
+    // make-ten chỉ hợp lệ khi cả hai số < 10 và tổng vượt 10 (need, rest đều > 0)
+    if (ans > 10 && Math.max(a, b) < 10) return 'make-ten';
     return 'objects';
   }
   if (op === 'sub') {
     if (b <= 3) return 'count-down';
     if (ans <= 3) return 'count-up';
-    if (a > 10) return 'subtract-from-ten';
+    // subtract-from-ten chỉ hợp lệ khi a ∈ (10, 20] và b < 10 (fromTen, extra đều ≥ 0)
+    if (a > 10 && a <= 20 && b < 10) return 'subtract-from-ten';
     return 'objects';
   }
   if (op === 'mul') {

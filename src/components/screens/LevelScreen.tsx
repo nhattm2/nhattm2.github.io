@@ -1,5 +1,5 @@
 import type { Mode, Op, Progress, Route } from '@/types';
-import { BoPanda } from '@/components/ui/BoPanda';
+import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { TopBar } from '@/components/ui/TopBar';
 import { LEVELS } from '@/lib/math-engine';
@@ -28,7 +28,7 @@ export function LevelScreen({ op, mode, onNavigate, onBack, progress }: LevelScr
     >
       <TopBar onBack={onBack} title="Chọn mức độ" stars={progress.stars} />
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 12 }}>
-        <BoPanda size={70} />
+        <GaoPanda size={70} />
         <Bubble>Bé thử mức nào?</Bubble>
       </div>
       <div

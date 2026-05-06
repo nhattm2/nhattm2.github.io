@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Level, Mode, Mood, Op, Route } from '@/types';
-import { BoPanda } from '@/components/ui/BoPanda';
+import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { Confetti } from '@/components/ui/Confetti';
 import { TopBar } from '@/components/ui/TopBar';
@@ -40,7 +40,7 @@ export function PlayScreen({
   const [showConfetti, setShowConfetti] = useState(false);
   const [floatScore, setFloatScore] = useState<string | null>(null);
   const [done, setDone] = useState(false);
-  const [boMood, setBoMood] = useState<Mood>('happy');
+  const [gaoMood, setGaoMood] = useState<Mood>('happy');
 
   const totalQuestions = mode === 'challenge' ? Infinity : 10;
   const hintIcon = HINT_ICONS[questionNum % HINT_ICONS.length]!;
@@ -78,7 +78,7 @@ export function PlayScreen({
 
     if (isCorrect) {
       setOutcome('correct');
-      setBoMood('celebrate');
+      setGaoMood('celebrate');
       Sounds.correct();
 
       const firstTry = wrongPicks.length === 0;
@@ -94,7 +94,7 @@ export function PlayScreen({
       window.setTimeout(() => {
         setShowConfetti(false);
         setFloatScore(null);
-        setBoMood('happy');
+        setGaoMood('happy');
       }, 1200);
       window.setTimeout(() => nextProblem(), 1100);
       return;
@@ -102,10 +102,10 @@ export function PlayScreen({
 
     const nextWrongs = [...wrongPicks, i];
     setWrongPicks(nextWrongs);
-    setBoMood('sad');
+    setGaoMood('sad');
     setStreak(0);
     Sounds.wrong();
-    window.setTimeout(() => setBoMood('happy'), 1500);
+    window.setTimeout(() => setGaoMood('happy'), 1500);
 
     if (nextWrongs.length >= 2) {
       setOutcome('revealed');
@@ -210,10 +210,13 @@ export function PlayScreen({
           padding: '20px 18px',
           boxShadow: 'var(--shadow)',
           position: 'relative',
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
-          <BoPanda size={64} mood={boMood} />
+          <GaoPanda size={64} mood={gaoMood} />
           <div style={{ flex: 1, paddingTop: 8 }}>
             <Bubble>
               {outcome === 'correct' && wrongPicks.length === 0
