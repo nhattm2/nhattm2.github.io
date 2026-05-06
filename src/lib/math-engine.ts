@@ -9,13 +9,11 @@ export const OPS: Record<Op, OpMeta> = {
 
 export const LEVELS: Record<Op, Level[]> = {
   add: [
-    { id: 'a1', label: 'Trong 5', max: 5, stars: 1 },
     { id: 'a2', label: 'Trong 10', max: 10, stars: 2 },
     { id: 'a3', label: 'Trong 20', max: 20, stars: 3 },
     { id: 'a4', label: 'Trong 100', max: 100, stars: 4 },
   ],
   sub: [
-    { id: 's1', label: 'Trong 5', max: 5, stars: 1 },
     { id: 's2', label: 'Trong 10', max: 10, stars: 2 },
     { id: 's3', label: 'Trong 20', max: 20, stars: 3 },
     { id: 's4', label: 'Trong 100', max: 100, stars: 4 },
@@ -52,12 +50,12 @@ export function genProblem(op: Op, level: Level): Problem {
   let ans = 0;
 
   if (op === 'add') {
-    a = rint(0, level.max);
-    b = rint(0, level.max - a);
+    a = rint(1, Math.max(1, level.max - 1));
+    b = rint(1, Math.max(1, level.max - a));
     ans = a + b;
   } else if (op === 'sub') {
-    a = rint(1, level.max);
-    b = rint(0, a);
+    a = rint(2, level.max);
+    b = rint(1, a - 1);
     ans = a - b;
   } else if (op === 'mul') {
     a = rint(2, level.max);
@@ -97,4 +95,37 @@ export function genChoices(problem: Problem): number[] {
     [arr[i], arr[j]] = [arr[j]!, arr[i]!];
   }
   return arr;
+}
+
+export type HintMethod =
+  | 'count-on'
+  | 'make-ten'
+  | 'count-down'
+  | 'count-up'
+  | 'subtract-from-ten'
+  | 'doubles'
+  | 'skip-count'
+  | 'array'
+  | 'inverse'
+  | 'objects';
+
+export function pickHintMethod(problem: Problem): HintMethod {
+  const { op, a, b, ans } = problem;
+  if (op === 'add') {
+    if (Math.min(a, b) <= 3) return 'count-on';
+    if (ans > 10) return 'make-ten';
+    return 'objects';
+  }
+  if (op === 'sub') {
+    if (b <= 3) return 'count-down';
+    if (ans <= 3) return 'count-up';
+    if (a > 10) return 'subtract-from-ten';
+    return 'objects';
+  }
+  if (op === 'mul') {
+    if (a === 2 || b === 2) return 'doubles';
+    if (a === 5 || b === 5 || a === 10 || b === 10) return 'skip-count';
+    return 'array';
+  }
+  return 'inverse';
 }
