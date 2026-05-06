@@ -110,6 +110,56 @@
   }
 }
 
+/* iPad / tablet portrait — bigger frame so the app fills the screen */
+@media (min-width: 768px) and (max-width: 1279px) and (orientation: portrait) {
+  .device-stage {
+    padding: 32px;
+  }
+  .device-frame {
+    max-width: 720px;
+    max-height: 1000px;
+    border-radius: 44px;
+    padding: 14px;
+  }
+  .device-frame .screen {
+    border-radius: 32px;
+  }
+  .device-frame::before {
+    width: 140px;
+    height: 26px;
+    top: 22px;
+  }
+  .frameless-screen {
+    max-width: 760px;
+    border-radius: 32px;
+  }
+}
+
+/* iPad landscape & desktop — tablet-shaped frame, capped so layout stays comfortable */
+@media (min-width: 1024px) and (orientation: landscape), (min-width: 1280px) {
+  .device-stage {
+    padding: 28px;
+  }
+  .device-frame {
+    max-width: 820px;
+    max-height: 1100px;
+    border-radius: 44px;
+    padding: 14px;
+  }
+  .device-frame .screen {
+    border-radius: 32px;
+  }
+  .device-frame::before {
+    width: 140px;
+    height: 26px;
+    top: 22px;
+  }
+  .frameless-screen {
+    max-width: 860px;
+    border-radius: 32px;
+  }
+}
+
 /* Floating settings button — bottom-right so it never overlaps the in-app top bar */
 .settings-fab {
   position: fixed;
