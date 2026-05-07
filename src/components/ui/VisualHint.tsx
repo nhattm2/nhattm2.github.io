@@ -46,12 +46,15 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
         <div style={{ ...BOX, border: '2px dashed #ffb59a' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
             <span style={{ ...NUM_CHIP, background: '#ffe7d6', color: '#c2502c' }}>{big}</span>
-            {steps.map((n, i) => (
-              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#ff8a6b', fontWeight: 800 }}>+1</span>
-                <span style={{ ...NUM_CHIP, background: '#fff', border: '2px solid #ffd1bd', color: '#c2502c' }}>{n}</span>
-              </span>
-            ))}
+            {steps.map((n, i) => {
+              const isLast = i === steps.length - 1;
+              return (
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ color: '#ff8a6b', fontWeight: 800 }}>+1</span>
+                  <span style={{ ...NUM_CHIP, background: '#fff', border: isLast ? '2px dashed #ffb59a' : '2px solid #ffd1bd', color: '#c2502c' }}>{isLast ? '?' : n}</span>
+                </span>
+              );
+            })}
           </div>
           <div style={TIP_TEXT}>Bắt đầu từ {big}, đếm tiếp {small} lần</div>
         </div>
@@ -99,12 +102,15 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
         <div style={{ ...BOX, border: '2px dashed #ffb59a' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
             <span style={{ ...NUM_CHIP, background: '#ffe7d6', color: '#c2502c' }}>{a}</span>
-            {steps.map((n, i) => (
-              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#ff8a6b', fontWeight: 800 }}>−1</span>
-                <span style={{ ...NUM_CHIP, background: '#fff', border: '2px solid #ffd1bd', color: '#c2502c' }}>{n}</span>
-              </span>
-            ))}
+            {steps.map((n, i) => {
+              const isLast = i === steps.length - 1;
+              return (
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ color: '#ff8a6b', fontWeight: 800 }}>−1</span>
+                  <span style={{ ...NUM_CHIP, background: '#fff', border: isLast ? '2px dashed #ffb59a' : '2px solid #ffd1bd', color: '#c2502c' }}>{isLast ? '?' : n}</span>
+                </span>
+              );
+            })}
           </div>
           <div style={TIP_TEXT}>Bắt đầu từ {a}, đếm lùi {b} lần</div>
         </div>
@@ -124,7 +130,7 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
             ))}
           </div>
           <div style={TIP_TEXT}>
-            Từ {b} đếm tiến lên {a} → cách {steps} bước
+            Từ {b} đếm tiến lên {a} → cách bao nhiêu bước?
           </div>
         </div>
       );
