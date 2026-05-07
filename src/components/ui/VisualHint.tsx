@@ -161,7 +161,6 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
     if (method === 'doubles') {
       const times = a === 2 ? b : a;
       const each = a === 2 ? a : b;
-      const total = times * each;
       return (
         <div style={{ ...BOX, border: '2px dashed #ffd56b' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -172,7 +171,7 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
               </span>
             ))}
             <span style={{ color: '#5fcfa0', fontWeight: 800 }}>=</span>
-            <span style={{ ...NUM_CHIP, background: '#dff7ea', color: '#1f7a4d' }}>{total}</span>
+            <span style={{ ...NUM_CHIP, background: '#fff', border: '2px dashed #b8e6cf', color: '#1f7a4d' }}>?</span>
           </div>
           <div style={TIP_TEXT}>
             {a} × {b} = cộng {each} lặp lại {times} lần
@@ -183,16 +182,17 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
     if (method === 'skip-count') {
       const step = a === 5 || a === 10 ? a : b;
       const times = a === 5 || a === 10 ? b : a;
-      const seq = Array.from({ length: times }, (_, i) => (i + 1) * step);
+      const seq = Array.from({ length: times - 1 }, (_, i) => (i + 1) * step);
       return (
         <div style={{ ...BOX, border: '2px dashed #ffd56b' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', flexWrap: 'wrap' }}>
             {seq.map((n, i) => (
               <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ ...NUM_CHIP, background: i === seq.length - 1 ? '#dff7ea' : '#fff5d6', color: i === seq.length - 1 ? '#1f7a4d' : '#a87a1f' }}>{n}</span>
-                {i < seq.length - 1 && <span style={{ color: '#caa23a', fontWeight: 800 }}>→</span>}
+                <span style={{ ...NUM_CHIP, background: '#fff5d6', color: '#a87a1f' }}>{n}</span>
+                <span style={{ color: '#caa23a', fontWeight: 800 }}>→</span>
               </span>
             ))}
+            <span style={{ ...NUM_CHIP, background: '#fff', border: '2px dashed #b8e6cf', color: '#1f7a4d' }}>?</span>
           </div>
           <div style={TIP_TEXT}>
             Nhảy {step}: đếm {times} bước

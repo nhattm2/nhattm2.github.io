@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import type { Level, Mode, Mood, Op, Route } from '@/types';
+import { useEffect, useRef, useState } from 'react';
+import type { Level, Mode, Mood, Op, Problem, Route } from '@/types';
 import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { Confetti } from '@/components/ui/Confetti';
@@ -28,7 +28,23 @@ export function PlayScreen({
   onBack,
   onCorrect,
 }: PlayScreenProps) {
-  const [problem, setProblem] = useState(() => genProblem(op, level));
+  const seenKeysRef = useRef<Set<string>>(new Set());
+
+  function genUniqueProblem(): Problem {
+    for (let i = 0; i < 30; i++) {
+      const p = genProblem(op, level);
+      const key = `${p.a}-${p.b}`;
+      if (!seenKeysRef.current.has(key)) {
+        seenKeysRef.current.add(key);
+        return p;
+      }
+    }
+    const p = genProblem(op, level);
+    seenKeysRef.current.add(`${p.a}-${p.b}`);
+    return p;
+  }
+
+  const [problem, setProblem] = useState(() => genUniqueProblem());
   const [choices, setChoices] = useState<number[]>(() => genChoices(problem));
   const [wrongPicks, setWrongPicks] = useState<number[]>([]);
   const [outcome, setOutcome] = useState<'pending' | 'correct' | 'revealed'>('pending');
@@ -66,8 +82,12 @@ export function PlayScreen({
       setDone(true);
       return;
     }
-    setQuestionNum((n) => n + 1);
-    setProblem(genProblem(op, level));
+    const nextNum = questionNum + 1;
+    if (mode === 'challenge' && nextNum % 10 === 1) {
+      seenKeysRef.current.clear();
+    }
+    setQuestionNum(nextNum);
+    setProblem(genUniqueProblem());
   }
 
   function handlePick(i: number) {
