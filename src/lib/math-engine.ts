@@ -9,19 +9,21 @@ export const OPS: Record<Op, OpMeta> = {
 
 export const LEVELS: Record<Op, Level[]> = {
   add: [
-    { id: 'a2', label: 'Trong 10', max: 10, stars: 2 },
-    { id: 'a3', label: 'Trong 20', max: 20, stars: 3 },
+    { id: 'a1', label: 'Trong 10', max: 10, stars: 1 },
+    { id: 'a2', label: 'Trong 20', max: 20, stars: 2 },
+    { id: 'a3', label: 'Trong 50', max: 50, stars: 3 },
     { id: 'a4', label: 'Trong 100', max: 100, stars: 4 },
   ],
   sub: [
-    { id: 's2', label: 'Trong 10', max: 10, stars: 2 },
-    { id: 's3', label: 'Trong 20', max: 20, stars: 3 },
+    { id: 's1', label: 'Trong 10', max: 10, stars: 1 },
+    { id: 's2', label: 'Trong 20', max: 20, stars: 2 },
+    { id: 's3', label: 'Trong 50', max: 50, stars: 3 },
     { id: 's4', label: 'Trong 100', max: 100, stars: 4 },
   ],
   mul: [
     { id: 'm1', label: 'Bảng 2-5', max: 5, stars: 2 },
     { id: 'm2', label: 'Bảng 2-9', max: 9, stars: 3 },
-    { id: 'm3', label: 'Bảng đầy đủ', max: 12, stars: 4 },
+    { id: 'm3', label: 'Bảng đầy đủ', max: 12, stars: 5 },
   ],
   div: [
     { id: 'd1', label: 'Chia trong 20', max: 5, stars: 2 },
