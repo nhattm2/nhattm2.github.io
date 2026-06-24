@@ -30,6 +30,8 @@ export interface Progress {
   badges: string[];
   totalCorrect: number;
   byOp: Partial<Record<Op, number>>;
+  /** Ngày (local, YYYY-MM-DD) số sao đang tính; sao reset về 0 khi sang ngày mới. */
+  lastDate: string;
 }
 
 export interface OpMeta {

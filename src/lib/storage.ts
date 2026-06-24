@@ -2,26 +2,39 @@ import type { Op, Progress } from '@/types';
 
 const STORAGE_KEY = 'kidmath_progress_v1';
 
+/** Local calendar day as YYYY-MM-DD — the boundary for the daily star reset. */
+function todayKey(): string {
+  const d = new Date();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${month}-${day}`;
+}
+
 const EMPTY_PROGRESS: Progress = {
   stars: 0,
   badges: [],
   totalCorrect: 0,
   byOp: {},
+  lastDate: '',
 };
 
 export function loadProgress(): Progress {
+  const today = todayKey();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...EMPTY_PROGRESS, byOp: {} };
+    if (!raw) return { ...EMPTY_PROGRESS, byOp: {}, lastDate: today };
     const parsed = JSON.parse(raw) as Partial<Progress>;
+    // Sang ngày mới thì sao về 0; huy hiệu và tổng câu đúng vẫn giữ nguyên.
+    const isNewDay = parsed.lastDate !== today;
     return {
-      stars: parsed.stars ?? 0,
+      stars: isNewDay ? 0 : (parsed.stars ?? 0),
       badges: parsed.badges ?? [],
       totalCorrect: parsed.totalCorrect ?? 0,
       byOp: parsed.byOp ?? {},
+      lastDate: today,
     };
   } catch {
-    return { ...EMPTY_PROGRESS, byOp: {} };
+    return { ...EMPTY_PROGRESS, byOp: {}, lastDate: today };
   }
 }
 
@@ -48,6 +61,7 @@ export function addStars(stars: number, op: Op): Progress {
     totalCorrect: p.totalCorrect + 1,
     byOp: { ...p.byOp, [op]: (p.byOp[op] ?? 0) + 1 },
     badges: [...p.badges],
+    lastDate: p.lastDate,
   };
 
   const badges = new Set(next.badges);
