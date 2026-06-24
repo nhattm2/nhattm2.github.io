@@ -58,6 +58,7 @@ export function addStars(stars: number, op: Op): Progress {
   if ((next.byOp.sub ?? 0) >= 10) badges.add('submaster');
   if ((next.byOp.mul ?? 0) >= 10) badges.add('mulmaster');
   if ((next.byOp.div ?? 0) >= 10) badges.add('divmaster');
+  if ((next.byOp.cmp ?? 0) >= 10) badges.add('cmpmaster');
   next.badges = Array.from(badges);
 
   saveProgress(next);

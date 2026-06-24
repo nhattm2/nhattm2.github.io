@@ -1,10 +1,11 @@
-import type { Badge, Level, Op, OpMeta, Problem } from '@/types';
+import type { Answer, Badge, Level, Op, OpMeta, Problem, Relation } from '@/types';
 
 export const OPS: Record<Op, OpMeta> = {
   add: { sym: '+', name: 'Cộng', color: 'peach' },
   sub: { sym: '−', name: 'Trừ', color: 'mint' },
   mul: { sym: '×', name: 'Nhân', color: 'sun' },
   div: { sym: '÷', name: 'Chia', color: 'sky' },
+  cmp: { sym: '?', name: 'So sánh', color: 'lav' },
 };
 
 export const LEVELS: Record<Op, Level[]> = {
@@ -30,6 +31,11 @@ export const LEVELS: Record<Op, Level[]> = {
     { id: 'd2', label: 'Chia trong 50', max: 9, stars: 3 },
     { id: 'd3', label: 'Chia khó', max: 12, stars: 4 },
   ],
+  cmp: [
+    { id: 'c1', label: 'Trong 20', max: 20, stars: 3 },
+    { id: 'c2', label: 'Trong 50', max: 50, stars: 4 },
+    { id: 'c3', label: 'Trong 100', max: 100, stars: 5 },
+  ],
 };
 
 export const BADGES: Record<string, Badge> = {
@@ -40,6 +46,7 @@ export const BADGES: Record<string, Badge> = {
   submaster: { icon: '➖', name: 'Vua phép trừ', desc: '10 câu trừ đúng' },
   mulmaster: { icon: '✖️', name: 'Vua phép nhân', desc: '10 câu nhân đúng' },
   divmaster: { icon: '➗', name: 'Vua phép chia', desc: '10 câu chia đúng' },
+  cmpmaster: { icon: '⚖️', name: 'Vua so sánh', desc: '10 câu so sánh đúng' },
 };
 
 export function rint(min: number, max: number): number {
@@ -63,6 +70,12 @@ export function genProblem(op: Op, level: Level): Problem {
     a = rint(2, level.max);
     b = rint(2, level.max);
     ans = a * b;
+  } else if (op === 'cmp') {
+    a = rint(0, level.max);
+    // ~1 in 4 problems are equal so '=' shows up regularly
+    b = Math.random() < 0.25 ? a : rint(0, level.max);
+    const rel: Relation = a < b ? '<' : a > b ? '>' : '=';
+    return { op, a, b, ans: rel, sym: '?' };
   } else {
     b = rint(2, level.max);
     ans = rint(1, level.max);
@@ -71,8 +84,11 @@ export function genProblem(op: Op, level: Level): Problem {
   return { op, a, b, ans, sym: OPS[op].sym };
 }
 
-export function genChoices(problem: Problem): number[] {
-  const correct = problem.ans;
+export function genChoices(problem: Problem): Answer[] {
+  // Comparison is always a fixed 3-way pick of the relation symbols
+  if (problem.op === 'cmp') return ['<', '=', '>'] as Relation[];
+
+  const correct = problem.ans as number;
   const set = new Set<number>([correct]);
   const range = Math.max(2, Math.floor(correct * 0.5) + 2);
 
@@ -112,16 +128,16 @@ export type HintMethod =
   | 'objects';
 
 export function pickHintMethod(problem: Problem): HintMethod {
-  const { op, a, b, ans } = problem;
+  const { op, a, b } = problem;
   if (op === 'add') {
     if (Math.min(a, b) <= 3) return 'count-on';
     // make-ten chỉ hợp lệ khi cả hai số < 10 và tổng vượt 10 (need, rest đều > 0)
-    if (ans > 10 && Math.max(a, b) < 10) return 'make-ten';
+    if (a + b > 10 && Math.max(a, b) < 10) return 'make-ten';
     return 'objects';
   }
   if (op === 'sub') {
     if (b <= 3) return 'count-down';
-    if (ans <= 3) return 'count-up';
+    if (a - b <= 3) return 'count-up';
     // subtract-from-ten chỉ hợp lệ khi a ∈ (10, 20] và b < 10 (fromTen, extra đều ≥ 0)
     if (a > 10 && a <= 20 && b < 10) return 'subtract-from-ten';
     return 'objects';

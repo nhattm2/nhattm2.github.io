@@ -70,9 +70,25 @@ const STEPS: Record<Op, Step[]> = {
       narrate: (ex) => `Vậy ${ex.a} ÷ ${ex.b} = ${ex.ans}. Mỗi bạn được ${ex.ans} viên!`,
     },
   ],
+  cmp: [
+    { title: 'Đề bài', narrate: (ex) => `So sánh ${ex.a} và ${ex.b}. Số nào lớn hơn?` },
+    { title: 'Bên trái', narrate: (ex) => `Bên trái có ${ex.a}.` },
+    { title: 'Bên phải', narrate: (ex) => `Bên phải có ${ex.b}.` },
+    {
+      title: 'Cột nào dài hơn',
+      narrate: () => 'Cột dài hơn là số lớn hơn. Mỏ nhọn (<, >) luôn quay về số nhỏ!',
+    },
+    { title: 'Kết quả', narrate: (ex) => `Vậy ${ex.a} ${ex.ans} ${ex.b}. Giỏi quá!` },
+  ],
 };
 
-const OP_ICON: Record<Op, string> = { add: '🍎', sub: '🍓', mul: '🐻', div: '🍬' };
+const OP_ICON: Record<Op, string> = {
+  add: '🍎',
+  sub: '🍓',
+  mul: '🐻',
+  div: '🍬',
+  cmp: '⚖️',
+};
 
 function makeExample(op: Op): Problem {
   if (op === 'add') {
@@ -90,6 +106,12 @@ function makeExample(op: Op): Problem {
     const b = 2 + Math.floor(Math.random() * 3);
     return { op, a, b, ans: a * b, sym: '×' };
   }
+  if (op === 'cmp') {
+    const a = 2 + Math.floor(Math.random() * 8); // 2-9
+    let b = 2 + Math.floor(Math.random() * 8);
+    if (Math.random() < 0.25) b = a;
+    return { op, a, b, ans: a < b ? '<' : a > b ? '>' : '=', sym: '?' };
+  }
   const b = 2 + Math.floor(Math.random() * 2);
   const ans = 2 + Math.floor(Math.random() * 3);
   return { op, a: b * ans, b, ans, sym: '÷' };
@@ -103,6 +125,64 @@ interface LearnVisualProps {
 }
 
 function LearnVisual({ op, step, ex, icon }: LearnVisualProps) {
+  if (op === 'cmp') {
+    if (step === 0) return <div style={{ fontSize: 80 }}>⚖️</div>;
+    const max = Math.max(ex.a, ex.b, 1);
+    const rows = [
+      { v: ex.a, c: '#ff8a6b', bg: '#ffeede', show: step >= 1 },
+      { v: ex.b, c: '#5fcfa0', bg: '#dcf5e7', show: step >= 2 },
+    ];
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, width: 300 }}>
+        {rows.map((row, i) => (
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              opacity: row.show ? 1 : 0.2,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 30,
+                fontWeight: 900,
+                fontFamily: 'Baloo 2',
+                width: 52,
+                textAlign: 'right',
+                color: 'var(--ink)',
+              }}
+            >
+              {row.v}
+            </span>
+            <div
+              style={{
+                flex: 1,
+                height: 28,
+                background: row.bg,
+                borderRadius: 999,
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  width: row.show ? `${(row.v / max) * 100}%` : '0%',
+                  background: row.c,
+                  borderRadius: 999,
+                  transition: 'width 0.5s',
+                  minWidth: row.v > 0 ? 6 : 0,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  // Past the cmp branch every remaining op has a numeric answer.
+  const ansNum = ex.ans as number;
   if (op === 'add') {
     if (step === 0) return <div style={{ fontSize: 80 }}>🤔</div>;
     if (step === 1) return <HintRow count={ex.a} icon={icon} />;
@@ -114,13 +194,13 @@ function LearnVisual({ op, step, ex, icon }: LearnVisualProps) {
           <HintRow count={ex.b} icon={icon} />
         </div>
       );
-    return <HintRow count={ex.ans} icon={icon} />;
+    return <HintRow count={ansNum} icon={icon} />;
   }
   if (op === 'sub') {
     if (step === 0) return <div style={{ fontSize: 80 }}>🍓</div>;
     if (step === 1) return <HintRow count={ex.a} icon={icon} />;
     if (step === 2) return <HintRow count={ex.a} icon={icon} strike={ex.b} />;
-    return <HintRow count={ex.ans} icon={icon} />;
+    return <HintRow count={ansNum} icon={icon} />;
   }
   if (op === 'mul') {
     if (step === 0) return <div style={{ fontSize: 80 }}>🐻</div>;
@@ -171,7 +251,7 @@ function LearnVisual({ op, step, ex, icon }: LearnVisualProps) {
             minWidth: 80,
           }}
         >
-          {Array.from({ length: ex.ans }).map((_, j) => (
+          {Array.from({ length: ansNum }).map((_, j) => (
             <span key={j} style={{ fontSize: 24 }}>
               {icon}
             </span>
@@ -292,26 +372,44 @@ export function LearnScreen({ op, onBack }: LearnScreenProps) {
           {cur.title.toUpperCase()}
         </div>
         <LearnVisual op={op} step={step} ex={example} icon={icon} />
-        {step >= steps.length - 2 && (
-          <div
-            className="pop-in"
-            style={{
-              fontSize: 44,
-              fontWeight: 900,
-              fontFamily: 'Baloo 2',
-              color: 'var(--ink)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <span>{example.a}</span>
-            <span style={{ color: '#ff8a6b' }}>{example.sym}</span>
-            <span>{example.b}</span>
-            <span style={{ color: 'var(--ink-soft)' }}>=</span>
-            <span style={{ color: '#5fcfa0' }}>{example.ans}</span>
-          </div>
-        )}
+        {step >= steps.length - 2 &&
+          (op === 'cmp' ? (
+            <div
+              className="pop-in"
+              style={{
+                fontSize: 44,
+                fontWeight: 900,
+                fontFamily: 'Baloo 2',
+                color: 'var(--ink)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+              }}
+            >
+              <span>{example.a}</span>
+              <span style={{ color: '#9a7fdf' }}>{example.ans}</span>
+              <span>{example.b}</span>
+            </div>
+          ) : (
+            <div
+              className="pop-in"
+              style={{
+                fontSize: 44,
+                fontWeight: 900,
+                fontFamily: 'Baloo 2',
+                color: 'var(--ink)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+              }}
+            >
+              <span>{example.a}</span>
+              <span style={{ color: '#ff8a6b' }}>{example.sym}</span>
+              <span>{example.b}</span>
+              <span style={{ color: 'var(--ink-soft)' }}>=</span>
+              <span style={{ color: '#5fcfa0' }}>{example.ans}</span>
+            </div>
+          ))}
       </div>
 
       <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>

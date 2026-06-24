@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Level, Mode, Mood, Op, Problem, Route } from '@/types';
+import type { Answer, Level, Mode, Mood, Op, Problem, Route } from '@/types';
 import { GaoPanda } from '@/components/ui/GaoPanda';
 import { Bubble } from '@/components/ui/Bubble';
 import { Confetti } from '@/components/ui/Confetti';
@@ -45,7 +45,7 @@ export function PlayScreen({
   }
 
   const [problem, setProblem] = useState(() => genUniqueProblem());
-  const [choices, setChoices] = useState<number[]>(() => genChoices(problem));
+  const [choices, setChoices] = useState<Answer[]>(() => genChoices(problem));
   const [wrongPicks, setWrongPicks] = useState<number[]>([]);
   const [outcome, setOutcome] = useState<'pending' | 'correct' | 'revealed'>('pending');
   const [streak, setStreak] = useState(0);
@@ -254,40 +254,74 @@ export function PlayScreen({
           </div>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 14,
-            fontSize: 56,
-            fontWeight: 900,
-            fontFamily: 'Baloo 2',
-            color: 'var(--ink)',
-            margin: '4px 0 14px',
-          }}
-        >
-          <span>{problem.a}</span>
-          <span style={{ color: '#ff8a6b' }}>{problem.sym}</span>
-          <span>{problem.b}</span>
-          <span style={{ color: 'var(--ink-soft)' }}>=</span>
-          <span
+        {op === 'cmp' ? (
+          <div
             style={{
-              display: 'inline-flex',
+              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              minWidth: 64,
-              height: 64,
-              background: '#fff7ee',
-              border: '3px dashed #ffb59a',
-              borderRadius: 16,
-              color: outcome !== 'pending' ? '#5fcfa0' : 'var(--ink-soft)',
-              fontSize: 44,
+              gap: 18,
+              fontSize: 56,
+              fontWeight: 900,
+              fontFamily: 'Baloo 2',
+              color: 'var(--ink)',
+              margin: '4px 0 14px',
             }}
           >
-            {outcome !== 'pending' ? problem.ans : '?'}
-          </span>
-        </div>
+            <span>{problem.a}</span>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 64,
+                height: 64,
+                background: '#fff7ee',
+                border: '3px dashed #9a7fdf',
+                borderRadius: 16,
+                color: outcome !== 'pending' ? '#9a7fdf' : 'var(--ink-soft)',
+              }}
+            >
+              {outcome !== 'pending' ? problem.ans : '?'}
+            </span>
+            <span>{problem.b}</span>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 14,
+              fontSize: 56,
+              fontWeight: 900,
+              fontFamily: 'Baloo 2',
+              color: 'var(--ink)',
+              margin: '4px 0 14px',
+            }}
+          >
+            <span>{problem.a}</span>
+            <span style={{ color: '#ff8a6b' }}>{problem.sym}</span>
+            <span>{problem.b}</span>
+            <span style={{ color: 'var(--ink-soft)' }}>=</span>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 64,
+                height: 64,
+                background: '#fff7ee',
+                border: '3px dashed #ffb59a',
+                borderRadius: 16,
+                color: outcome !== 'pending' ? '#5fcfa0' : 'var(--ink-soft)',
+                fontSize: 44,
+              }}
+            >
+              {outcome !== 'pending' ? problem.ans : '?'}
+            </span>
+          </div>
+        )}
 
         {showHint && (
           <div
@@ -320,7 +354,7 @@ export function PlayScreen({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: op === 'cmp' ? '1fr 1fr 1fr' : '1fr 1fr',
           gap: 12,
           marginTop: 16,
         }}

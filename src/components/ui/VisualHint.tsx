@@ -34,7 +34,59 @@ const NUM_CHIP = {
 };
 
 export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
-  const { op, a, b, ans } = problem;
+  const { op, a, b } = problem;
+
+  if (op === 'cmp') {
+    const max = Math.max(a, b, 1);
+    const rows = [
+      { v: a, c: '#ff8a6b', bg: '#ffeede' },
+      { v: b, c: '#5fcfa0', bg: '#dcf5e7' },
+    ];
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 280 }}>
+        {rows.map((row, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span
+              style={{
+                fontSize: 26,
+                fontWeight: 900,
+                fontFamily: 'Baloo 2',
+                width: 48,
+                textAlign: 'right',
+                color: 'var(--ink)',
+              }}
+            >
+              {row.v}
+            </span>
+            <div
+              style={{
+                flex: 1,
+                height: 24,
+                background: row.bg,
+                borderRadius: 999,
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  width: `${(row.v / max) * 100}%`,
+                  background: row.c,
+                  borderRadius: 999,
+                  transition: 'width 0.4s',
+                  minWidth: row.v > 0 ? 6 : 0,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+        <div style={{ ...TIP_TEXT, marginTop: 2 }}>
+          Cột nào dài hơn thì số đó lớn hơn
+        </div>
+      </div>
+    );
+  }
+
   const method = pickHintMethod(problem);
 
   if (op === 'add') {
@@ -117,7 +169,7 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
       );
     }
     if (method === 'count-up') {
-      const steps = ans;
+      const steps = a - b;
       return (
         <div style={{ ...BOX, border: '2px dashed #b8dcf0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>

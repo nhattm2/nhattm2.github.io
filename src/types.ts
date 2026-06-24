@@ -1,8 +1,14 @@
-export type Op = 'add' | 'sub' | 'mul' | 'div';
+export type Op = 'add' | 'sub' | 'mul' | 'div' | 'cmp';
 
 export type Mode = 'practice' | 'challenge';
 
 export type Mood = 'happy' | 'thinking' | 'celebrate' | 'sad';
+
+/** Comparison relation between two numbers. */
+export type Relation = '<' | '>' | '=';
+
+/** A problem's answer: a number for arithmetic, a relation for comparison. */
+export type Answer = number | Relation;
 
 export interface Level {
   id: string;
@@ -15,7 +21,7 @@ export interface Problem {
   op: Op;
   a: number;
   b: number;
-  ans: number;
+  ans: Answer;
   sym: string;
 }
 
@@ -29,7 +35,7 @@ export interface Progress {
 export interface OpMeta {
   sym: string;
   name: string;
-  color: 'peach' | 'mint' | 'sun' | 'sky';
+  color: 'peach' | 'mint' | 'sun' | 'sky' | 'lav';
 }
 
 export interface Badge {

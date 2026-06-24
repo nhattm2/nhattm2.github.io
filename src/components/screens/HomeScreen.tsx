@@ -20,9 +20,11 @@ interface OpCardProps {
   color: string;
   bg: string;
   onClick: () => void;
+  wide?: boolean;
+  isNew?: boolean;
 }
 
-function OpCard({ label, sym, emoji, desc, color, bg, onClick }: OpCardProps) {
+function OpCard({ label, sym, emoji, desc, color, bg, onClick, wide, isNew }: OpCardProps) {
   return (
     <button
       onClick={onClick}
@@ -36,6 +38,10 @@ function OpCard({ label, sym, emoji, desc, color, bg, onClick }: OpCardProps) {
         boxShadow: 'var(--shadow)',
         transition: 'transform 0.15s, box-shadow 0.15s',
         color: 'var(--ink)',
+        gridColumn: wide ? '1 / -1' : 'auto',
+        display: wide ? 'flex' : 'block',
+        alignItems: 'center',
+        gap: 14,
       }}
       onMouseDown={(e) => (e.currentTarget.style.transform = 'translateY(2px)')}
       onMouseUp={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
@@ -66,22 +72,51 @@ function OpCard({ label, sym, emoji, desc, color, bg, onClick }: OpCardProps) {
           justifyContent: 'center',
           fontSize: 28,
           fontWeight: 800,
-          marginBottom: 10,
+          marginBottom: wide ? 0 : 10,
+          flexShrink: 0,
           boxShadow: 'inset 0 -3px 0 rgba(0,0,0,0.1)',
         }}
       >
         {sym}
       </div>
-      <div style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.15 }}>{label}</div>
-      <div
-        style={{
-          fontSize: 12,
-          color: 'var(--ink-soft)',
-          marginTop: 4,
-          lineHeight: 1.3,
-        }}
-      >
-        {desc}
+      <div style={{ flex: wide ? 1 : 'none' }}>
+        <div
+          style={{
+            fontSize: 17,
+            fontWeight: 800,
+            lineHeight: 1.15,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          {label}
+          {isNew && (
+            <span
+              style={{
+                background: '#9a7fdf',
+                color: '#fff',
+                fontSize: 10,
+                fontWeight: 800,
+                padding: '2px 7px',
+                borderRadius: 999,
+                letterSpacing: '0.06em',
+              }}
+            >
+              MỚI
+            </span>
+          )}
+        </div>
+        <div
+          style={{
+            fontSize: 12,
+            color: 'var(--ink-soft)',
+            marginTop: 4,
+            lineHeight: 1.3,
+          }}
+        >
+          {desc}
+        </div>
       </div>
     </button>
   );
@@ -194,6 +229,17 @@ export function HomeScreen({ onNavigate, progress, onResetProgress }: HomeScreen
           color="#5b9fd1"
           bg="#dcecf7"
           onClick={() => go('div')}
+        />
+        <OpCard
+          label="So Sánh"
+          sym="≦"
+          emoji="⚖️"
+          desc="Lớn hơn, bé hơn, bằng"
+          color="#9a7fdf"
+          bg="#ece5fb"
+          wide
+          isNew
+          onClick={() => go('cmp')}
         />
       </nav>
 
