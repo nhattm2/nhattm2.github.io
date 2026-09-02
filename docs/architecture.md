@@ -62,7 +62,12 @@ interface Progress {
 ## Logic miền (`lib/math-engine.ts`)
 
 - `OPS`, `LEVELS`, `BADGES` — bảng dữ liệu cấu hình cho 5 phép tính.
-- `genProblem(op, level)` — sinh đề; phép so sánh (`cmp`) trả `ans` là `Relation` (`<`/`>`/`=`), ~1/4 khả năng bằng nhau.
+- `MIN_TARGET = 10` — **sàn phạm vi**: bỏ hẳn các phép toán nằm hoàn toàn dưới 10. Mỗi đề luôn chạm mốc ≥ 10 ở
+  số lớn nhất: tổng (cộng), số bị trừ (trừ), tích (nhân), số bị chia (chia), cả hai số (so sánh).
+  Vì vậy `LEVELS.add`/`LEVELS.sub` bắt đầu từ "Trong 20" (không còn mức "Trong 10").
+- `genProblem(op, level)` — sinh đề trong `[MIN_TARGET, level.max]`; phép cộng chọn tổng trước rồi tách hai số,
+  phép nhân/chia kẹp số thứ hai để tích/số bị chia ≥ 10. Phép so sánh (`cmp`) trả `ans` là `Relation`
+  (`<`/`>`/`=`), ~1/4 khả năng bằng nhau.
 - `genChoices(problem)` — 4 lựa chọn số (hoặc cố định `['<','=','>']` cho so sánh), có xáo trộn.
 - `pickHintMethod(problem)` — chọn phương pháp sư phạm theo **ràng buộc toán học** (xem comment trong code);
   `VisualHint` render tương ứng.

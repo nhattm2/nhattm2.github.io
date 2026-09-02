@@ -10,16 +10,14 @@ export const OPS: Record<Op, OpMeta> = {
 
 export const LEVELS: Record<Op, Level[]> = {
   add: [
-    { id: 'a1', label: 'Trong 10', max: 10, stars: 1 },
-    { id: 'a2', label: 'Trong 20', max: 20, stars: 2 },
-    { id: 'a3', label: 'Trong 50', max: 50, stars: 3 },
-    { id: 'a4', label: 'Trong 100', max: 100, stars: 4 },
+    { id: 'a1', label: 'Trong 20', max: 20, stars: 2 },
+    { id: 'a2', label: 'Trong 50', max: 50, stars: 3 },
+    { id: 'a3', label: 'Trong 100', max: 100, stars: 4 },
   ],
   sub: [
-    { id: 's1', label: 'Trong 10', max: 10, stars: 1 },
-    { id: 's2', label: 'Trong 20', max: 20, stars: 2 },
-    { id: 's3', label: 'Trong 50', max: 50, stars: 3 },
-    { id: 's4', label: 'Trong 100', max: 100, stars: 4 },
+    { id: 's1', label: 'Trong 20', max: 20, stars: 2 },
+    { id: 's2', label: 'Trong 50', max: 50, stars: 3 },
+    { id: 's3', label: 'Trong 100', max: 100, stars: 4 },
   ],
   mul: [
     { id: 'm1', label: 'Bảng 2-5', max: 5, stars: 2 },
@@ -53,35 +51,44 @@ export function rint(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ * Sàn phạm vi: bỏ qua các phép toán nằm hoàn toàn dưới 10.
+ * Mỗi đề luôn chạm mốc ≥ 10 ở số lớn nhất: tổng (cộng), số bị trừ (trừ),
+ * tích (nhân), số bị chia (chia) và cả hai số (so sánh).
+ */
+export const MIN_TARGET = 10;
+
 export function genProblem(op: Op, level: Level): Problem {
-  let a = 0;
-  let b = 0;
-  let ans = 0;
+  const top = Math.max(MIN_TARGET, level.max);
 
   if (op === 'add') {
-    a = rint(1, Math.max(1, level.max - 1));
-    b = rint(1, Math.max(1, level.max - a));
-    ans = a + b;
-  } else if (op === 'sub') {
-    a = rint(2, level.max);
-    b = rint(1, a - 1);
-    ans = a - b;
-  } else if (op === 'mul') {
-    a = rint(2, level.max);
-    b = rint(2, level.max);
-    ans = a * b;
-  } else if (op === 'cmp') {
-    a = rint(0, level.max);
+    // Chọn tổng trước để tổng luôn ∈ [10, max]
+    const ans = rint(MIN_TARGET, top);
+    const a = rint(1, ans - 1);
+    return { op, a, b: ans - a, ans, sym: OPS.add.sym };
+  }
+  if (op === 'sub') {
+    const a = rint(MIN_TARGET, top);
+    const b = rint(1, a - 1);
+    return { op, a, b, ans: a - b, sym: OPS.sub.sym };
+  }
+  if (op === 'mul') {
+    const a = rint(2, level.max);
+    // b vừa đủ lớn để tích ≥ 10, nhưng không vượt bảng của cấp độ
+    const b = rint(Math.min(level.max, Math.max(2, Math.ceil(MIN_TARGET / a))), level.max);
+    return { op, a, b, ans: a * b, sym: OPS.mul.sym };
+  }
+  if (op === 'cmp') {
+    const a = rint(MIN_TARGET, top);
     // ~1 in 4 problems are equal so '=' shows up regularly
-    b = Math.random() < 0.25 ? a : rint(0, level.max);
+    const b = Math.random() < 0.25 ? a : rint(MIN_TARGET, top);
     const rel: Relation = a < b ? '<' : a > b ? '>' : '=';
     return { op, a, b, ans: rel, sym: '?' };
-  } else {
-    b = rint(2, level.max);
-    ans = rint(1, level.max);
-    a = b * ans;
   }
-  return { op, a, b, ans, sym: OPS[op].sym };
+  const b = rint(2, level.max);
+  // thương vừa đủ lớn để số bị chia ≥ 10
+  const ans = rint(Math.min(level.max, Math.max(1, Math.ceil(MIN_TARGET / b))), level.max);
+  return { op, a: b * ans, b, ans, sym: OPS.div.sym };
 }
 
 export function genChoices(problem: Problem): Answer[] {
