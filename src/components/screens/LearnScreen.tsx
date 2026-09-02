@@ -24,8 +24,11 @@ const STEPS: Record<Op, Step[]> = {
     },
     { title: 'Đếm số ban đầu', narrate: (ex) => `Đầu tiên bé có ${ex.a} quả táo này.` },
     { title: 'Thêm vào', narrate: (ex) => `Cô tặng thêm ${ex.b} quả nữa.` },
-    { title: 'Đếm tất cả', narrate: (ex) => `Đếm tất cả: 1, 2, 3... thấy ${ex.ans} quả!` },
-    { title: 'Kết quả', narrate: (ex) => `Vậy ${ex.a} + ${ex.b} = ${ex.ans}. Bé hiểu rồi nha!` },
+    { title: 'Đếm tất cả', narrate: (ex) => `Đếm tất cả: 1, 2, 3... thấy ${ex.result} quả!` },
+    {
+      title: 'Kết quả',
+      narrate: (ex) => `Vậy ${ex.a} + ${ex.b} = ${ex.result}. Bé hiểu rồi nha!`,
+    },
   ],
   sub: [
     {
@@ -36,9 +39,9 @@ const STEPS: Record<Op, Step[]> = {
     { title: 'Bớt đi', narrate: (ex) => `Bé ăn mất ${ex.b} quả (gạch chéo).` },
     {
       title: 'Đếm còn lại',
-      narrate: (ex) => `Đếm những quả không bị gạch: còn ${ex.ans} quả.`,
+      narrate: (ex) => `Đếm những quả không bị gạch: còn ${ex.result} quả.`,
     },
-    { title: 'Kết quả', narrate: (ex) => `Vậy ${ex.a} − ${ex.b} = ${ex.ans}. Đơn giản lắm!` },
+    { title: 'Kết quả', narrate: (ex) => `Vậy ${ex.a} − ${ex.b} = ${ex.result}. Đơn giản lắm!` },
   ],
   mul: [
     {
@@ -47,10 +50,13 @@ const STEPS: Record<Op, Step[]> = {
     },
     { title: 'Xếp thành hàng', narrate: (ex) => `Xếp ${ex.a} hàng cho dễ đếm.` },
     { title: 'Mỗi hàng có mấy?', narrate: (ex) => `Mỗi hàng có ${ex.b} bạn.` },
-    { title: 'Cộng các hàng', narrate: (ex) => `${ex.b} cộng ${ex.b}... ${ex.a} lần = ${ex.ans}.` },
+    {
+      title: 'Cộng các hàng',
+      narrate: (ex) => `${ex.b} cộng ${ex.b}... ${ex.a} lần = ${ex.result}.`,
+    },
     {
       title: 'Kết quả',
-      narrate: (ex) => `Vậy ${ex.a} × ${ex.b} = ${ex.ans}. Phép nhân là cộng nhanh!`,
+      narrate: (ex) => `Vậy ${ex.a} × ${ex.b} = ${ex.result}. Phép nhân là cộng nhanh!`,
     },
   ],
   div: [
@@ -64,10 +70,10 @@ const STEPS: Record<Op, Step[]> = {
       title: 'Chia thành nhóm',
       narrate: (ex) => `Chia thành ${ex.b} nhóm, mỗi lượt cho mỗi bạn 1 viên.`,
     },
-    { title: 'Mỗi nhóm có mấy?', narrate: (ex) => `Đếm trong một nhóm: ${ex.ans} viên.` },
+    { title: 'Mỗi nhóm có mấy?', narrate: (ex) => `Đếm trong một nhóm: ${ex.result} viên.` },
     {
       title: 'Kết quả',
-      narrate: (ex) => `Vậy ${ex.a} ÷ ${ex.b} = ${ex.ans}. Mỗi bạn được ${ex.ans} viên!`,
+      narrate: (ex) => `Vậy ${ex.a} ÷ ${ex.b} = ${ex.result}. Mỗi bạn được ${ex.result} viên!`,
     },
   ],
   cmp: [
@@ -78,7 +84,7 @@ const STEPS: Record<Op, Step[]> = {
       title: 'Cột nào dài hơn',
       narrate: () => 'Cột dài hơn là số lớn hơn. Mỏ nhọn (<, >) luôn quay về số nhỏ!',
     },
-    { title: 'Kết quả', narrate: (ex) => `Vậy ${ex.a} ${ex.ans} ${ex.b}. Giỏi quá!` },
+    { title: 'Kết quả', narrate: (ex) => `Vậy ${ex.a} ${ex.result} ${ex.b}. Giỏi quá!` },
   ],
 };
 
@@ -94,27 +100,27 @@ function makeExample(op: Op): Problem {
   if (op === 'add') {
     const a = 3 + Math.floor(Math.random() * 3);
     const b = 2 + Math.floor(Math.random() * 3);
-    return { op, a, b, ans: a + b, sym: '+' };
+    return { op, a, b, result: a + b, slot: 'result', sym: '+' };
   }
   if (op === 'sub') {
     const a = 5 + Math.floor(Math.random() * 4);
     const b = 1 + Math.floor(Math.random() * 3);
-    return { op, a, b, ans: a - b, sym: '−' };
+    return { op, a, b, result: a - b, slot: 'result', sym: '−' };
   }
   if (op === 'mul') {
     const a = 2 + Math.floor(Math.random() * 2);
     const b = 2 + Math.floor(Math.random() * 3);
-    return { op, a, b, ans: a * b, sym: '×' };
+    return { op, a, b, result: a * b, slot: 'result', sym: '×' };
   }
   if (op === 'cmp') {
     const a = 2 + Math.floor(Math.random() * 8); // 2-9
     let b = 2 + Math.floor(Math.random() * 8);
     if (Math.random() < 0.25) b = a;
-    return { op, a, b, ans: a < b ? '<' : a > b ? '>' : '=', sym: '?' };
+    return { op, a, b, result: a < b ? '<' : a > b ? '>' : '=', slot: 'result', sym: '?' };
   }
   const b = 2 + Math.floor(Math.random() * 2);
-  const ans = 2 + Math.floor(Math.random() * 3);
-  return { op, a: b * ans, b, ans, sym: '÷' };
+  const result = 2 + Math.floor(Math.random() * 3);
+  return { op, a: b * result, b, result, slot: 'result', sym: '÷' };
 }
 
 interface LearnVisualProps {
@@ -182,7 +188,7 @@ function LearnVisual({ op, step, ex, icon }: LearnVisualProps) {
     );
   }
   // Past the cmp branch every remaining op has a numeric answer.
-  const ansNum = ex.ans as number;
+  const ansNum = ex.result as number;
   if (op === 'add') {
     if (step === 0) return <div style={{ fontSize: 80 }}>🤔</div>;
     if (step === 1) return <HintRow count={ex.a} icon={icon} />;
@@ -220,7 +226,7 @@ function LearnVisual({ op, step, ex, icon }: LearnVisualProps) {
       );
     return (
       <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--ink)' }}>
-        {ex.ans} bạn gấu! 🎉
+        {ex.result} bạn gấu! 🎉
       </div>
     );
   }
@@ -387,7 +393,7 @@ export function LearnScreen({ op, onBack }: LearnScreenProps) {
               }}
             >
               <span>{example.a}</span>
-              <span style={{ color: '#9a7fdf' }}>{example.ans}</span>
+              <span style={{ color: '#9a7fdf' }}>{example.result}</span>
               <span>{example.b}</span>
             </div>
           ) : (
@@ -407,7 +413,7 @@ export function LearnScreen({ op, onBack }: LearnScreenProps) {
               <span style={{ color: '#ff8a6b' }}>{example.sym}</span>
               <span>{example.b}</span>
               <span style={{ color: 'var(--ink-soft)' }}>=</span>
-              <span style={{ color: '#5fcfa0' }}>{example.ans}</span>
+              <span style={{ color: '#5fcfa0' }}>{example.result}</span>
             </div>
           ))}
       </div>

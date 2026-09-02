@@ -80,6 +80,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **KHÔNG thêm dependency nặng** (router, state lib, UI kit, CSS framework) — project cố ý tối giản để deploy tĩnh lên GitHub Pages.
 - `pickHintMethod` trong `math-engine.ts` có **ràng buộc toán học** (ghi rõ trong comment): vd `make-ten` chỉ hợp lệ khi cả hai số < 10 và tổng > 10; `subtract-from-ten` chỉ khi `a ∈ (10, 20]` và `b < 10`. Giữ điều kiện hợp lệ khi sửa gợi ý.
 - `cmp` (so sánh) có đáp án là **`Relation` (`<`/`>`/`=`)**, không phải số — nhánh xử lý riêng ở `genProblem`/`genChoices`.
+- **Đề bài ẩn 1 trong 3 ô** (`Problem.slot`): `result`, `a` hoặc `b` (`? + 7 = 12`). Đáp án đúng lấy qua `answerOf(problem)`, **không** đọc trực tiếp `problem.result`; gợi ý cho ô `a`/`b` đi qua `hintProblem()` để đổi sang phép ngược.
 - **Phạm vi đề bài bắt đầu từ 10** (`MIN_TARGET` trong `math-engine.ts`): không sinh phép toán nằm hoàn toàn dưới 10; add/sub không còn mức "Trong 10". Ví dụ minh hoạ ở `LearnScreen` (`makeExample`) vẫn dùng số nhỏ để đếm được bằng hình.
 - Build ra `dist/`; deploy dùng `-t` (kèm dotfiles) lên branch `gh-pages`.
 

@@ -5,7 +5,7 @@ import { Bubble } from '@/components/ui/Bubble';
 import { Confetti } from '@/components/ui/Confetti';
 import { TopBar } from '@/components/ui/TopBar';
 import { VisualHint } from '@/components/ui/VisualHint';
-import { OPS, genChoices, genProblem } from '@/lib/math-engine';
+import { OPS, answerOf, genChoices, genProblem } from '@/lib/math-engine';
 import { Sounds } from '@/lib/sounds';
 import { ResultScreen } from './ResultScreen';
 
@@ -33,14 +33,14 @@ export function PlayScreen({
   function genUniqueProblem(): Problem {
     for (let i = 0; i < 30; i++) {
       const p = genProblem(op, level);
-      const key = `${p.a}-${p.b}`;
+      const key = `${p.a}-${p.b}-${p.slot}`;
       if (!seenKeysRef.current.has(key)) {
         seenKeysRef.current.add(key);
         return p;
       }
     }
     const p = genProblem(op, level);
-    seenKeysRef.current.add(`${p.a}-${p.b}`);
+    seenKeysRef.current.add(`${p.a}-${p.b}-${p.slot}`);
     return p;
   }
 
@@ -94,7 +94,7 @@ export function PlayScreen({
     if (outcome !== 'pending' || done) return;
     if (wrongPicks.includes(i)) return;
 
-    const isCorrect = choices[i] === problem.ans;
+    const isCorrect = choices[i] === answerOf(problem);
 
     if (isCorrect) {
       setOutcome('correct');
@@ -151,6 +151,35 @@ export function PlayScreen({
     mode === 'challenge'
       ? ((time ?? 0) / 60) * 100
       : (questionNum / totalQuestions) * 100;
+  const answer = answerOf(problem);
+
+  /** Ô trống bé phải điền; hiện đáp án khi câu đã xong. */
+  const blank = (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: 64,
+        height: 64,
+        background: '#fff7ee',
+        border: '3px dashed #ffb59a',
+        borderRadius: 16,
+        color: outcome !== 'pending' ? '#5fcfa0' : 'var(--ink-soft)',
+        fontSize: 44,
+      }}
+    >
+      {outcome !== 'pending' ? answer : '?'}
+    </span>
+  );
+
+  function bubbleText(): string {
+    if (outcome === 'correct') return wrongPicks.length === 0 ? 'Bé giỏi quá!' : 'Tốt rồi nha bé!';
+    if (outcome === 'revealed') return `Đáp án là ${answer} nhé!`;
+    if (wrongPicks.length > 0) return 'Thử lại nha bé!';
+    if (streak >= 3) return `Liên tiếp ${streak} câu đúng!`;
+    return problem.slot === 'result' ? 'Bé thử nhé!' : 'Số nào còn thiếu?';
+  }
 
   return (
     <div
@@ -238,19 +267,7 @@ export function PlayScreen({
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
           <GaoPanda size={64} mood={gaoMood} />
           <div style={{ flex: 1, paddingTop: 8 }}>
-            <Bubble>
-              {outcome === 'correct' && wrongPicks.length === 0
-                ? 'Bé giỏi quá!'
-                : outcome === 'correct'
-                  ? 'Tốt rồi nha bé!'
-                  : outcome === 'revealed'
-                    ? `Đáp án là ${problem.ans} nhé!`
-                    : wrongPicks.length > 0
-                      ? 'Thử lại nha bé!'
-                      : streak >= 3
-                        ? `Liên tiếp ${streak} câu đúng!`
-                        : 'Bé thử nhé!'}
-            </Bubble>
+            <Bubble>{bubbleText()}</Bubble>
           </div>
         </div>
 
@@ -282,7 +299,7 @@ export function PlayScreen({
                 color: outcome !== 'pending' ? '#9a7fdf' : 'var(--ink-soft)',
               }}
             >
-              {outcome !== 'pending' ? problem.ans : '?'}
+              {outcome !== 'pending' ? answer : '?'}
             </span>
             <span>{problem.b}</span>
           </div>
@@ -300,26 +317,11 @@ export function PlayScreen({
               margin: '4px 0 14px',
             }}
           >
-            <span>{problem.a}</span>
+            {problem.slot === 'a' ? blank : <span>{problem.a}</span>}
             <span style={{ color: '#ff8a6b' }}>{problem.sym}</span>
-            <span>{problem.b}</span>
+            {problem.slot === 'b' ? blank : <span>{problem.b}</span>}
             <span style={{ color: 'var(--ink-soft)' }}>=</span>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: 64,
-                height: 64,
-                background: '#fff7ee',
-                border: '3px dashed #ffb59a',
-                borderRadius: 16,
-                color: outcome !== 'pending' ? '#5fcfa0' : 'var(--ink-soft)',
-                fontSize: 44,
-              }}
-            >
-              {outcome !== 'pending' ? problem.ans : '?'}
-            </span>
+            {problem.slot === 'result' ? blank : <span>{problem.result}</span>}
           </div>
         )}
 
@@ -361,7 +363,7 @@ export function PlayScreen({
       >
         {choices.map((c, i) => {
           const isWrong = wrongPicks.includes(i);
-          const isAnswer = c === problem.ans;
+          const isAnswer = c === answer;
           const showAsCorrect = isAnswer && outcome !== 'pending';
           const isLocked = outcome !== 'pending' || isWrong;
           const dim = isLocked && !showAsCorrect && !isWrong;

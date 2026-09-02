@@ -10,6 +10,9 @@ export type Relation = '<' | '>' | '=';
 /** A problem's answer: a number for arithmetic, a relation for comparison. */
 export type Answer = number | Relation;
 
+/** Ô bị ẩn trong đề bài: số hạng thứ nhất, thứ hai, hoặc kết quả. */
+export type Slot = 'a' | 'b' | 'result';
+
 export interface Level {
   id: string;
   label: string;
@@ -21,7 +24,10 @@ export interface Problem {
   op: Op;
   a: number;
   b: number;
-  ans: Answer;
+  /** Giá trị sau dấu '='; với so sánh là quan hệ giữa a và b. */
+  result: Answer;
+  /** Ô bé phải chọn; hai ô còn lại hiển thị sẵn. */
+  slot: Slot;
   sym: string;
 }
 

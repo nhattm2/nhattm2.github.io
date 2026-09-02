@@ -65,10 +65,16 @@ interface Progress {
 - `MIN_TARGET = 10` — **sàn phạm vi**: bỏ hẳn các phép toán nằm hoàn toàn dưới 10. Mỗi đề luôn chạm mốc ≥ 10 ở
   số lớn nhất: tổng (cộng), số bị trừ (trừ), tích (nhân), số bị chia (chia), cả hai số (so sánh).
   Vì vậy `LEVELS.add`/`LEVELS.sub` bắt đầu từ "Trong 20" (không còn mức "Trong 10").
-- `genProblem(op, level)` — sinh đề trong `[MIN_TARGET, level.max]`; phép cộng chọn tổng trước rồi tách hai số,
-  phép nhân/chia kẹp số thứ hai để tích/số bị chia ≥ 10. Phép so sánh (`cmp`) trả `ans` là `Relation`
+- `genProblem(op, level, slot?)` — sinh đề trong `[MIN_TARGET, level.max]`; phép cộng chọn tổng trước rồi tách hai số,
+  phép nhân/chia kẹp số thứ hai để tích/số bị chia ≥ 10. Phép so sánh (`cmp`) trả `result` là `Relation`
   (`<`/`>`/`=`), ~1/4 khả năng bằng nhau.
-- `genChoices(problem)` — 4 lựa chọn số (hoặc cố định `['<','=','>']` cho so sánh), có xáo trộn.
+- **Ô bị ẩn (`slot`)** — mỗi đề giữ đủ `a`, `b`, `result` và đánh dấu ô bé phải chọn:
+  `result` (`5 + 7 = ?`), `a` (`? + 7 = 12`) hoặc `b` (`5 + ? = 12`). `pickSlot()` bốc thăm 50% `result`,
+  25% `a`, 25% `b`; `cmp` luôn ẩn `result`. `answerOf(problem)` trả giá trị đúng của ô đó.
+- `hintProblem(problem)` — đổi đề ẩn `a`/`b` thành đề "tìm kết quả" của **phép ngược** tương đương
+  (`? + 7 = 12` → `12 − 7`, `? × 3 = 12` → `12 ÷ 3`) để `VisualHint` dạy đúng cách tìm số còn thiếu.
+- `genChoices(problem)` — 4 lựa chọn số quanh `answerOf(problem)` (hoặc cố định `['<','=','>']` cho so sánh),
+  có xáo trộn; ô ẩn là số hạng thì lựa chọn không xuống dưới 1.
 - `pickHintMethod(problem)` — chọn phương pháp sư phạm theo **ràng buộc toán học** (xem comment trong code);
   `VisualHint` render tương ứng.
 

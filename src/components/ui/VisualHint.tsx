@@ -1,5 +1,5 @@
 import type { Problem } from '@/types';
-import { pickHintMethod } from '@/lib/math-engine';
+import { hintProblem, pickHintMethod } from '@/lib/math-engine';
 import { HintRow } from './HintRow';
 
 interface VisualHintProps {
@@ -34,7 +34,9 @@ const NUM_CHIP = {
 };
 
 export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
-  const { op, a, b } = problem;
+  // Câu ẩn số hạng được đổi sang phép ngược tương đương trước khi vẽ
+  const shown = hintProblem(problem);
+  const { op, a, b } = shown;
 
   if (op === 'cmp') {
     const max = Math.max(a, b, 1);
@@ -87,7 +89,7 @@ export function VisualHint({ problem, hintIcon = '🍎' }: VisualHintProps) {
     );
   }
 
-  const method = pickHintMethod(problem);
+  const method = pickHintMethod(shown);
 
   if (op === 'add') {
     if (method === 'count-on') {
